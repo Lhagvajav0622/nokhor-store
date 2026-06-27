@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" role="img" aria-label="Нөхөр">
+  <rect x="2" y="2" width="60" height="60" rx="16" fill="#2536ce" stroke="#15151b" stroke-width="4"/>
+  <!-- paw pad -->
+  <ellipse cx="32" cy="40" rx="13" ry="10" fill="#fbf6ea"/>
+  <!-- toes -->
+  <ellipse cx="18" cy="29" rx="4.5" ry="6" fill="#fbf6ea"/>
+  <ellipse cx="27" cy="22" rx="4.5" ry="6" fill="#fbf6ea"/>
+  <ellipse cx="37" cy="22" rx="4.5" ry="6" fill="#fbf6ea"/>
+  <ellipse cx="46" cy="29" rx="4.5" ry="6" fill="#fbf6ea"/>
+</svg>

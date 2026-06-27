@@ -1,5 +1,13 @@
+import type { Metadata } from 'next'
 import Link from 'next/link'
 import { ArrowLeft } from '@phosphor-icons/react/dist/ssr'
+
+export const metadata: Metadata = {
+  title: 'Бидний тухай',
+  description:
+    'Нөхөр — Улаанбаатарын амьтны дэлгүүр. Бидний түүх, эрхэм зорилго, амьтанд ээлтэй үнэт зүйлс.',
+  alternates: { canonical: '/about' },
+}
 
 export default function AboutPage() {
   return (

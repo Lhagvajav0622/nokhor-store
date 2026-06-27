@@ -1,0 +1,13 @@
+services:
+  web:
+    build: .
+    image: nokhor-store
+    container_name: nokhor-store
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      # Орчны хувьсагчдаа .env файлд тохируулна (env_file доор)
+    env_file:
+      - .env.production

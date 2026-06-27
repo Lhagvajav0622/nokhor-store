@@ -1,0 +1,14 @@
+node_modules
+.next
+.git
+chats
+project
+npm-debug.log
+.env*.local
+.env
+Dockerfile
+.dockerignore
+README.md
+CHANGELOG.md
+DEPLOYMENT.md
+*.zip

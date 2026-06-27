@@ -4,6 +4,9 @@
 
 **Stack:** Next.js 15 · App Router · Tailwind CSS · TypeScript · Zustand
 
+> Хийгдсэн бүх ажлын дэлгэрэнгүйг [CHANGELOG.md](./CHANGELOG.md)-ээс үзнэ үү.
+> Серверт нийтлэх (Datacom) заавар: [DEPLOYMENT.md](./DEPLOYMENT.md).
+
 ---
 
 ## Хөгжүүлэлт
@@ -29,8 +32,10 @@ app/                   # Next.js App Router хуудаснууд
   about/               # Бидний тухай
   sale/                # Хямдрал
   loyalty/             # Урамшуулал
+  contact/             # Холбоо барих (баталгаажуулалттай форм)
   admin/               # Удирдлагын самбар (/admin)
   api/order/           # Захиалгын имэйл илгээх API
+  api/contact/         # Холбоо барих имэйл илгээх API
 components/            # Дахин ашиглагдах бүрэлдэхүүн хэсгүүд
 data/products.ts       # Барааны мэдээлэл (энд бараа нэм/засаарай)
 lib/store.ts           # Cart + wishlist state (Zustand)

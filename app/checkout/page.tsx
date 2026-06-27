@@ -37,8 +37,21 @@ export default function CheckoutPage() {
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
-    if (!name || !phone || !address) {
+    if (!name.trim() || !phone.trim() || !address.trim()) {
       setError('Бүх талбарыг бөглөнө үү.')
+      return
+    }
+    if (name.trim().length < 2) {
+      setError('Нэрээ бүрэн оруулна уу.')
+      return
+    }
+    const digits = phone.replace(/\D/g, '')
+    if (digits.length !== 8) {
+      setError('Утасны дугаар 8 оронтой байх ёстой.')
+      return
+    }
+    if (address.trim().length < 6) {
+      setError('Хаягаа дэлгэрэнгүй оруулна уу.')
       return
     }
     setError('')

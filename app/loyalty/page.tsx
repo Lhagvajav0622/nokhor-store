@@ -1,5 +1,13 @@
+import type { Metadata } from 'next'
 import Link from 'next/link'
 import { ArrowLeft } from '@phosphor-icons/react/dist/ssr'
+
+export const metadata: Metadata = {
+  title: 'Урамшуулал',
+  description:
+    'Нөхөр гишүүнчлэл — худалдан авалт бүрт оноо цуглуулж, шатлал ахиулан онцгой хямдрал эдлээрэй.',
+  alternates: { canonical: '/loyalty' },
+}
 
 const TIERS = [
   { name: 'Шинэ',     min: 0,    max: 500,  color: '#9aa6ef', badge: '🌱' },

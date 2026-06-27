@@ -71,13 +71,13 @@ export default function AdminPage() {
   return (
     <div className="flex min-h-screen bg-ink-900" style={{ fontFamily: 'Rubik, sans-serif' }}>
       {/* Sidebar */}
-      <aside className="w-[220px] shrink-0 flex flex-col border-r-[2.5px] border-ink-700 bg-ink-900">
+      <aside className="w-[64px] sm:w-[220px] shrink-0 flex flex-col border-r-[2.5px] border-ink-700 bg-ink-900">
         {/* Logo */}
-        <div className="p-5 border-b border-ink-700">
+        <div className="p-4 sm:p-5 border-b border-ink-700 text-center sm:text-left">
           <div className="font-display font-black text-[22px] text-paper-0" style={{ letterSpacing: '-0.02em' }}>
-            🐾 Нөхөр
+            🐾<span className="hidden sm:inline"> Нөхөр</span>
           </div>
-          <div className="font-mono text-[11px] text-ink-500 mt-0.5 uppercase tracking-[.1em]">Admin</div>
+          <div className="hidden sm:block font-mono text-[11px] text-ink-500 mt-0.5 uppercase tracking-[.1em]">Admin</div>
         </div>
 
         {/* Nav */}
@@ -86,7 +86,10 @@ export default function AdminPage() {
             <button
               key={item.key}
               onClick={() => setTab(item.key)}
-              className="flex items-center gap-3 px-3.5 py-2.5 rounded-xl cursor-pointer border-[2.5px] text-left transition-none"
+              title={item.label}
+              aria-label={item.label}
+              aria-current={tab === item.key ? 'page' : undefined}
+              className="relative flex items-center justify-center sm:justify-start gap-3 px-3.5 py-2.5 rounded-xl cursor-pointer border-[2.5px] text-left transition-none"
               style={{
                 background: tab === item.key ? '#ffc833' : 'transparent',
                 color: tab === item.key ? '#15151b' : '#e6d8b9',
@@ -97,9 +100,9 @@ export default function AdminPage() {
               }}
             >
               {item.icon}
-              <span className="flex-1">{item.label}</span>
+              <span className="hidden sm:block flex-1">{item.label}</span>
               {item.badge && (
-                <span className="font-mono text-[11px] font-bold bg-brand-red text-white rounded-pill px-1.5 py-0.5 border border-ink-900">
+                <span className="font-mono text-[11px] font-bold bg-brand-red text-white rounded-pill px-1.5 py-0.5 border border-ink-900 absolute top-1 right-1 sm:static">
                   {item.badge}
                 </span>
               )}
@@ -111,10 +114,11 @@ export default function AdminPage() {
         <div className="p-3 border-t border-ink-700">
           <Link
             href="/"
-            className="flex items-center gap-2 px-3.5 py-2.5 rounded-xl text-ink-300 hover:text-paper-0 transition-colors font-body font-bold text-[14px]"
+            title="Дэлгүүр рүү"
+            className="flex items-center justify-center sm:justify-start gap-2 px-3.5 py-2.5 rounded-xl text-ink-300 hover:text-paper-0 transition-colors font-body font-bold text-[14px]"
           >
             <ArrowLeft size={18} weight="bold" />
-            Дэлгүүр рүү
+            <span className="hidden sm:inline">Дэлгүүр рүү</span>
           </Link>
         </div>
       </aside>

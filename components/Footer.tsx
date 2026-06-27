@@ -15,6 +15,17 @@ import { useState } from 'react'
 export default function Footer() {
   const pathname = usePathname()
   const [email, setEmail] = useState('')
+  const [newsletter, setNewsletter] = useState<'idle' | 'ok' | 'error'>('idle')
+
+  function handleSubscribe() {
+    const valid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())
+    if (!valid) {
+      setNewsletter('error')
+      return
+    }
+    setNewsletter('ok')
+    setEmail('')
+  }
 
   if (pathname.startsWith('/admin')) return null
 
@@ -57,7 +68,7 @@ export default function Footer() {
           <Link href="/faq" className="text-[14px] text-paper-200 hover:text-paper-0 transition-colors">Хүргэлт</Link>
           <Link href="/faq" className="text-[14px] text-paper-200 hover:text-paper-0 transition-colors">Буцаалт</Link>
           <Link href="/faq" className="text-[14px] text-paper-200 hover:text-paper-0 transition-colors">Түгээмэл асуулт</Link>
-          <Link href="/faq" className="text-[14px] text-paper-200 hover:text-paper-0 transition-colors">Холбоо барих</Link>
+          <Link href="/contact" className="text-[14px] text-paper-200 hover:text-paper-0 transition-colors">Холбоо барих</Link>
         </div>
 
         {/* About */}
@@ -76,18 +87,31 @@ export default function Footer() {
             <input
               type="email"
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              onChange={(e) => {
+                setEmail(e.target.value)
+                if (newsletter !== 'idle') setNewsletter('idle')
+              }}
+              onKeyDown={(e) => e.key === 'Enter' && handleSubscribe()}
               placeholder="имэйл хаяг"
-              className="flex-1 h-[42px] px-3.5 border-[2.5px] border-paper-0 rounded-pill bg-transparent text-paper-0 font-body text-[14px] placeholder:text-ink-300 focus:outline-none focus:border-marigold-500"
+              aria-label="Имэйл хаяг"
+              aria-invalid={newsletter === 'error'}
+              className="flex-1 min-w-0 h-[42px] px-3.5 border-[2.5px] border-paper-0 rounded-pill bg-transparent text-paper-0 font-body text-[14px] placeholder:text-ink-300 focus:outline-none focus:border-marigold-500"
             />
             <button
-              onClick={() => setEmail('')}
+              type="button"
+              onClick={handleSubscribe}
               aria-label="Бүртгүүлэх"
               className="nx-press h-[42px] px-4 border-[2.5px] border-ink-900 rounded-pill bg-marigold-500 text-ink-900 font-bold cursor-pointer shadow-hard-sm flex items-center"
             >
               <PaperPlaneTilt weight="bold" size={16} />
             </button>
           </div>
+          {newsletter === 'ok' && (
+            <p className="text-[13px] font-semibold text-brand-green-light">Амжилттай бүртгэгдлээ! 🐾</p>
+          )}
+          {newsletter === 'error' && (
+            <p className="text-[13px] font-semibold text-marigold-500">Зөв имэйл хаяг оруулна уу.</p>
+          )}
         </div>
       </div>
 
