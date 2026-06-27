@@ -1,0 +1,44 @@
+/* ============================================================
+   Нөхөр — Radii, borders, shadows
+   The comic look = thick INK outlines + HARD offset shadows
+   (sticker / cut-out feel, no blur). One soft paper shadow
+   is kept for floating surfaces (menus, toasts).
+   ============================================================ */
+
+:root {
+  /* Corner radii — chunky but friendly */
+  --radius-xs:  4px;
+  --radius-sm:  8px;
+  --radius-md:  14px;
+  --radius-lg:  20px;
+  --radius-xl:  28px;
+  --radius-pill:999px;
+  --radius-blob:42% 58% 56% 44% / 52% 44% 56% 48%; /* hand-drawn blob */
+
+  /* Border widths — the ink line is the signature */
+  --border-hair: 1px;
+  --border-ink:  2.5px;   /* default comic outline */
+  --border-bold: 4px;     /* heavy outline for hero elements */
+  --border-color: var(--line-ink);
+
+  /* Hard offset shadows (comic / sticker) */
+  --shadow-hard-sm: 2px 2px 0 0 var(--ink-900);
+  --shadow-hard:    4px 4px 0 0 var(--ink-900);
+  --shadow-hard-lg: 6px 6px 0 0 var(--ink-900);
+  --shadow-hard-brand: 4px 4px 0 0 var(--cobalt-600);
+  --shadow-hard-accent:4px 4px 0 0 var(--marigold-600);
+
+  /* Soft paper shadow — only for floating layers */
+  --shadow-soft:    0 4px 14px -2px rgba(21,21,27,0.18);
+  --shadow-soft-lg: 0 16px 40px -8px rgba(21,21,27,0.28);
+
+  /* Motion */
+  /* slight overshoot bounce */
+  --ease-snap: cubic-bezier(0.2, 0.9, 0.25, 1.4); /* @kind other */
+  --ease-out:  cubic-bezier(0.22, 1, 0.36, 1); /* @kind other */
+  --dur-fast: 120ms; /* @kind other */
+  --dur-med:  220ms; /* @kind other */
+
+  /* Press travel for hard-shadow controls */
+  --press-travel: 2px;
+}

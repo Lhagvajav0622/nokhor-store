@@ -1,0 +1,1462 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="ds/styles.css">
+<style>
+  .nx-press{transition:transform 120ms var(--ease-out),box-shadow 120ms var(--ease-out),background 120ms}
+  .nx-press:hover{transform:translate(-1px,-1px);box-shadow:var(--shadow-hard-lg)}
+  .nx-press:active{transform:translate(2px,2px);box-shadow:var(--shadow-hard-sm)}
+  .nx-lift{transition:transform 140ms var(--ease-out),box-shadow 140ms var(--ease-out)}
+  .nx-lift:hover{transform:translate(-3px,-3px);box-shadow:var(--shadow-hard-lg)}
+  .nx-icbtn{transition:transform 120ms,background 120ms,box-shadow 120ms}
+  .nx-icbtn:hover{transform:translate(-1px,-1px)}
+  .nx-bank{transition:transform 120ms,box-shadow 120ms}
+  .nx-bank:hover{transform:translate(-2px,-2px);box-shadow:var(--shadow-hard)}
+  .nx-tile{transition:transform 140ms var(--ease-out),box-shadow 140ms var(--ease-out)}
+  .nx-tile:hover{transform:translate(-3px,-3px) rotate(-1deg);box-shadow:var(--shadow-hard-lg)}
+  .nx-link{cursor:pointer}
+  .nx-link:hover{text-decoration:underline}
+  input:focus,textarea:focus{border-color:var(--cobalt-600)!important;outline:none}
+  @keyframes nx-slidein{from{transform:translateX(100%)}to{transform:translateX(0)}}
+  @keyframes nx-fadein{from{opacity:0}to{opacity:1}}
+  @keyframes nx-pop{0%{transform:scale(.7);opacity:0}60%{transform:scale(1.06)}100%{transform:scale(1);opacity:1}}
+  @media (max-width:900px){
+    .nx-hero-grid,.nx-detail-grid,.nx-checkout-grid{grid-template-columns:1fr !important}
+    .nx-admin-row{grid-template-columns:1fr !important}
+    .nx-hero-art{min-height:240px !important;border-left:none !important;border-top:4px solid var(--line-ink) !important}
+    .nx-footer-grid{grid-template-columns:1fr 1fr !important;gap:28px !important}
+  }
+  @media (max-width:760px){
+    .nx-admin-aside{width:64px !important}
+    .nx-asidelabel{display:none !important}
+  }
+  @media (max-width:620px){
+    .nx-search{display:none !important}
+    .nx-strip{display:none !important}
+    .nx-footer-grid{grid-template-columns:1fr !important}
+    .nx-h1{font-size:34px !important}
+    .nx-vlabel{display:none !important}
+    .nx-section-pad{padding-left:16px !important;padding-right:16px !important}
+  }
+</style>
+</helmet>
+
+<div style="min-height:100vh;background:var(--surface-page);font-family:var(--font-body);color:var(--text-body)">
+
+  <sc-if value="{{ notAdmin }}" hint-placeholder-val="{{ true }}">
+  <header style="position:sticky;top:0;z-index:30;background:var(--surface-page);border-bottom:2.5px solid var(--line-ink)">
+    <div class="nx-section-pad" style="max-width:1200px;margin:0 auto;padding:14px 24px;display:flex;align-items:center;gap:18px">
+      <button onClick="{{ goHome }}" aria-label="Нөхөр нүүр" style="display:flex;align-items:center;gap:10px;background:none;border:0;cursor:pointer;padding:0">
+        <img src="ds/assets/logo-mark.svg" width="40" height="40" alt="">
+        <span style="font-family:var(--font-display);font-weight:800;font-size:26px;letter-spacing:-.02em;color:var(--text-strong)">{{ storeName }}</span>
+      </button>
+      <div class="nx-search" style="flex:1;position:relative;display:flex;align-items:center">
+        <i class="ph ph-magnifying-glass" style="position:absolute;left:16px;font-size:20px;color:var(--text-muted)"></i>
+        <input value="{{ query }}" onInput="{{ onSearch }}" placeholder="Хоол, тоглоом, брэнд хайх…" style="width:100%;height:46px;padding:0 16px 0 44px;font-family:var(--font-body);font-size:15px;border:2.5px solid var(--line-ink);border-radius:999px;background:var(--surface-card);box-shadow:var(--shadow-hard-sm)">
+      </div>
+      <nav style="display:flex;align-items:center;gap:10px">
+        <button class="nx-icbtn" onClick="{{ goWishlist }}" aria-label="Дуртай" style="position:relative;width:44px;height:44px;border:2.5px solid var(--line-ink);border-radius:999px;background:var(--surface-card);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:20px;color:var(--ink-900);box-shadow:var(--shadow-hard-sm)"><i class="ph-bold ph-heart"></i><sc-if value="{{ wishlistNotEmpty }}"><span style="position:absolute;top:-7px;right:-7px;min-width:20px;height:20px;padding:0 5px;background:var(--marigold-500);color:var(--ink-900);border-radius:999px;border:2px solid var(--line-ink);font-family:var(--font-mono);font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center">{{ wishlistCount }}</span></sc-if></button>
+        <button class="nx-icbtn" onClick="{{ goAccount }}" aria-label="Профайл" style="width:44px;height:44px;border:2.5px solid var(--line-ink);border-radius:999px;background:var(--surface-card);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:20px;color:var(--ink-900);box-shadow:var(--shadow-hard-sm)"><i class="ph-bold ph-user"></i></button>
+        <div style="position:relative">
+          <button class="nx-icbtn" onClick="{{ openCart }}" aria-label="Сагс" style="width:44px;height:44px;border:2.5px solid var(--line-ink);border-radius:14px;background:var(--cobalt-600);color:var(--paper-0);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:20px;box-shadow:var(--shadow-hard-sm)"><i class="ph-bold ph-shopping-cart"></i></button>
+          <sc-if value="{{ cartCountShow }}"><span style="position:absolute;top:-7px;right:-7px;min-width:20px;height:20px;padding:0 5px;background:var(--red-500);color:#fff;border-radius:999px;border:2px solid var(--line-ink);font-family:var(--font-mono);font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center">{{ cartCount }}</span></sc-if>
+        </div>
+      </nav>
+    </div>
+    <div class="nx-strip nx-section-pad" style="max-width:1200px;margin:0 auto;padding:0 24px 12px;display:flex;gap:26px;flex-wrap:wrap;font-family:var(--font-mono);font-size:12.5px;font-weight:600;color:var(--text-body)">
+      <span><i class="ph-fill ph-truck"></i> ₮100,000-аас дээш үнэгүй хүргэлт</span>
+      <span><i class="ph-fill ph-phone"></i> 7700-1234</span>
+      <span><i class="ph-fill ph-paw-print"></i> 12,000+ аз жаргалтай гэр бүл</span>
+    </div>
+  </header>
+  </sc-if>
+
+  <!-- ============ HOME ============ -->
+  <sc-if value="{{ isHome }}" hint-placeholder-val="{{ true }}">
+    <div class="nx-variant-band nx-section-pad" style="max-width:1200px;margin:0 auto;padding:18px 24px 0;display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+      <span class="nx-vlabel" style="font-family:var(--font-mono);font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:var(--text-muted)">Нүүр хувилбар</span>
+      <div style="display:flex;border:2.5px solid var(--line-ink);border-radius:999px;overflow:hidden;box-shadow:var(--shadow-hard-sm)">
+        <button onClick="{{ variantA }}" style="{{ vBtnA }}">A · Кобальт</button>
+        <button onClick="{{ variantB }}" style="{{ vBtnB }}">B · Сэтгүүл</button>
+        <button onClick="{{ variantC }}" style="{{ vBtnC }}">C · Постер</button>
+      </div>
+    </div>
+
+    <!-- Variant A: cobalt split -->
+    <sc-if value="{{ isVariantA }}">
+      <section class="nx-section-pad" style="max-width:1200px;margin:20px auto 0;padding:0 24px">
+        <div class="nx-hero-grid grain" style="display:grid;grid-template-columns:1.1fr .9fr;background:var(--cobalt-600);border-radius:var(--radius-xl);border:4px solid var(--line-ink);box-shadow:var(--shadow-hard-lg);overflow:hidden">
+          <div style="padding:48px 44px;color:var(--paper-0)">
+            <span style="font-family:var(--font-mono);text-transform:uppercase;letter-spacing:.12em;font-size:12px;font-weight:700;display:inline-flex;gap:6px;align-items:center;opacity:.9"><i class="ph-fill ph-paw-print"></i> Улаанбаатарын амьтны дэлгүүр</span>
+            <h1 class="nx-h1" style="font-family:var(--font-display);font-weight:900;font-size:52px;line-height:1.02;letter-spacing:-.02em;margin:14px 0 16px;color:var(--paper-0)">Шинэ найзаа<br>сайхан хооллоё.</h1>
+            <p style="font-size:17px;line-height:1.5;max-width:420px;margin:0 0 26px;color:var(--cobalt-100)">Муур, нохой, туулай — бүгдэд хайртай хоол, тоглоом, дагалдах хэрэгсэл. Улаанбаатарт нэг өдрийн дотор хүргэнэ.</p>
+            <div style="display:flex;gap:12px;flex-wrap:wrap">
+              <button class="nx-press" onClick="{{ goListAll }}" style="height:56px;padding:0 30px;display:inline-flex;align-items:center;gap:8px;font-weight:700;font-size:18px;border:2.5px solid var(--line-ink);border-radius:999px;background:var(--ink-900);color:var(--paper-0);cursor:pointer;box-shadow:var(--shadow-hard)"><i class="ph-bold ph-storefront"></i> Дэлгүүр үзэх</button>
+              <button class="nx-press" onClick="{{ goListAll }}" style="height:56px;padding:0 28px;display:inline-flex;align-items:center;gap:8px;font-weight:700;font-size:18px;border:2.5px solid var(--line-ink);border-radius:999px;background:var(--surface-card);color:var(--text-strong);cursor:pointer;box-shadow:var(--shadow-hard)">Хямдрал →</button>
+            </div>
+          </div>
+          <div class="nx-hero-art" style="position:relative;background:var(--marigold-500);border-left:4px solid var(--line-ink);display:flex;align-items:center;justify-content:center;min-height:320px">
+            <div style="position:absolute;top:22px;left:22px;font-family:var(--font-display);font-style:italic;font-weight:900;font-size:42px;color:var(--paper-0);-webkit-text-stroke:2.5px var(--ink-900);transform:rotate(-8deg)">МЯУ!</div>
+            <img src="ds/assets/logo-mark-cobalt.svg" width="230" height="230" alt="" style="filter:drop-shadow(6px 6px 0 rgba(21,21,27,.25))">
+            <div style="position:absolute;bottom:20px;right:20px;background:var(--paper-0);border:2.5px solid var(--line-ink);border-radius:999px;padding:8px 14px;font-family:var(--font-mono);font-size:12px;font-weight:700;display:flex;gap:6px;align-items:center;box-shadow:var(--shadow-hard-sm)"><i class="ph-fill ph-truck"></i> Үнэгүй хүргэлт</div>
+          </div>
+        </div>
+      </section>
+    </sc-if>
+
+    <!-- Variant B: cream editorial -->
+    <sc-if value="{{ isVariantB }}">
+      <section class="nx-section-pad nx-hero-grid" style="max-width:1200px;margin:20px auto 0;padding:0 24px;display:grid;grid-template-columns:1fr 1fr;gap:28px;align-items:center">
+        <div>
+          <span style="font-family:var(--font-mono);text-transform:uppercase;letter-spacing:.12em;font-size:12px;font-weight:700;color:var(--cobalt-600)">Чиний хамгийн сайн нөхөр</span>
+          <h1 class="nx-h1" style="font-family:var(--font-display);font-weight:900;font-size:58px;line-height:1.0;letter-spacing:-.03em;margin:14px 0 18px;color:var(--text-strong)">Гэрийн<br>найзууддаа<br><span style="color:var(--cobalt-600)">хайраа</span> бэлэглэ.</h1>
+          <p style="font-size:17px;line-height:1.55;max-width:440px;margin:0 0 24px">Чанартай хоол, тоглоом, арчилгааны бүтээгдэхүүн. Бид амьтдыг гэр бүл шиг хайрладаг.</p>
+          <div style="display:flex;gap:12px;flex-wrap:wrap">
+            <button class="nx-press" onClick="{{ goListAll }}" style="height:56px;padding:0 30px;display:inline-flex;align-items:center;gap:8px;font-weight:700;font-size:18px;border:2.5px solid var(--line-ink);border-radius:999px;background:var(--cobalt-600);color:var(--paper-0);cursor:pointer;box-shadow:var(--shadow-hard)"><i class="ph-bold ph-storefront"></i> Дэлгүүр үзэх</button>
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+          <sc-for list="{{ catTiles }}" as="t" hint-placeholder-count="4">
+            <button class="nx-tile" onClick="{{ t.go }}" style="{{ t.style }}"><i class="ph-fill ph-{{ t.icon }}" style="font-size:38px"></i><span style="font-family:var(--font-display);font-weight:800;font-size:20px">{{ t.label }}</span></button>
+          </sc-for>
+        </div>
+      </section>
+    </sc-if>
+
+    <!-- Variant C: ink poster -->
+    <sc-if value="{{ isVariantC }}">
+      <section class="nx-section-pad" style="max-width:1200px;margin:20px auto 0;padding:0 24px">
+        <div class="grain" style="position:relative;background:var(--ink-900);border:4px solid var(--line-ink);border-radius:var(--radius-xl);box-shadow:var(--shadow-hard-lg);padding:64px 32px;text-align:center;overflow:hidden">
+          <div style="position:absolute;top:24px;left:34px;font-family:var(--font-display);font-style:italic;font-weight:900;font-size:64px;color:transparent;-webkit-text-stroke:2px var(--cobalt-500);transform:rotate(-10deg);opacity:.8">ГАВ!</div>
+          <div style="position:absolute;bottom:24px;right:34px;font-family:var(--font-display);font-style:italic;font-weight:900;font-size:64px;color:transparent;-webkit-text-stroke:2px var(--marigold-500);transform:rotate(8deg);opacity:.8">МЯУ!</div>
+          <span style="font-family:var(--font-mono);text-transform:uppercase;letter-spacing:.14em;font-size:12px;font-weight:700;color:var(--marigold-500)">Шинэ улирлын цуглуулга</span>
+          <h1 class="nx-h1" style="font-family:var(--font-display);font-weight:900;font-size:66px;line-height:1.0;letter-spacing:-.03em;margin:18px auto;max-width:760px;color:var(--paper-0)">Бүх <span style="color:var(--marigold-500)">амьтанд</span> зориулсан дэлгүүр.</h1>
+          <p style="font-size:18px;line-height:1.5;max-width:520px;margin:0 auto 28px;color:var(--cobalt-100)">Нэг дороос хоол, тоглоом, дагалдах хэрэгсэл, арчилгаа. QPay-ээр хялбар төл.</p>
+          <div style="display:flex;gap:12px;flex-wrap:wrap;justify-content:center">
+            <button class="nx-press" onClick="{{ goListAll }}" style="height:56px;padding:0 32px;display:inline-flex;align-items:center;gap:8px;font-weight:700;font-size:18px;border:2.5px solid var(--line-ink);border-radius:999px;background:var(--marigold-500);color:var(--ink-900);cursor:pointer;box-shadow:var(--shadow-hard)"><i class="ph-bold ph-storefront"></i> Дэлгүүр үзэх</button>
+            <button class="nx-press" onClick="{{ goListAll }}" style="height:56px;padding:0 28px;display:inline-flex;align-items:center;gap:8px;font-weight:700;font-size:18px;border:2.5px solid var(--paper-0);border-radius:999px;background:transparent;color:var(--paper-0);cursor:pointer">Хямдралтай бараа →</button>
+          </div>
+        </div>
+      </section>
+    </sc-if>
+
+    <!-- Popular categories -->
+    <section class="nx-section-pad" style="max-width:1200px;margin:40px auto 0;padding:0 24px">
+      <h2 style="font-family:var(--font-display);font-weight:800;font-size:30px;margin:0 0 18px;color:var(--text-strong)">Ангилал</h2>
+      <div style="display:flex;gap:14px;flex-wrap:wrap">
+        <sc-for list="{{ catTiles }}" as="t" hint-placeholder-count="5">
+          <button class="nx-tile" onClick="{{ t.go }}" style="{{ t.chipStyle }}"><i class="ph-fill ph-{{ t.icon }}" style="font-size:26px"></i> {{ t.label }}</button>
+        </sc-for>
+      </div>
+    </section>
+
+    <!-- Featured products -->
+    <section class="nx-section-pad" style="max-width:1200px;margin:40px auto 0;padding:0 24px">
+      <div style="display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin-bottom:18px">
+        <h2 style="font-family:var(--font-display);font-weight:800;font-size:30px;margin:0;color:var(--text-strong)">Онцлох бараа</h2>
+        <span class="nx-link" onClick="{{ goListAll }}" style="font-family:var(--font-mono);font-size:13px;font-weight:700;color:var(--cobalt-600)">Бүгдийг үзэх →</span>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:20px">
+        <sc-for list="{{ featured }}" as="p" hint-placeholder-count="8">
+          <div class="nx-lift" onClick="{{ p.open }}" style="display:flex;flex-direction:column;background:var(--surface-card);border:2.5px solid var(--line-ink);border-radius:var(--radius-lg);box-shadow:var(--shadow-hard);overflow:hidden;cursor:pointer">
+            <div class="grain" style="position:relative;aspect-ratio:1/1;background:var(--paper-100);border-bottom:2.5px solid var(--line-ink);display:flex;align-items:center;justify-content:center">
+              <i class="ph-fill ph-{{ p.icon }}" style="font-size:64px;color:var(--ink-300)"></i>
+              <div style="position:absolute;top:10px;left:10px;display:flex;gap:6px">
+                <sc-if value="{{ p.badge }}"><span style="{{ p.badgeStyle }}">{{ p.badgeLabel }}</span></sc-if>
+                <sc-if value="{{ p.soldOut }}"><span style="font-family:var(--font-mono);font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;padding:3px 8px;border-radius:6px;border:2px solid var(--line-ink);background:var(--ink-900);color:var(--paper-0)">Дууссан</span></sc-if>
+              </div>
+              <button onClick="{{ p.fav }}" aria-label="Дуртай" style="{{ p.heartStyle }}"><i class="{{ p.heartClass }}"></i></button>
+            </div>
+            <div style="padding:16px;display:flex;flex-direction:column;gap:5px;flex:1">
+              <span style="font-family:var(--font-mono);font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--text-body)">{{ p.category }}</span>
+              <h3 style="font-family:var(--font-body);font-weight:700;font-size:18px;line-height:1.2;margin:0;color:var(--text-strong)">{{ p.name }}</h3>
+              <span style="display:flex;align-items:center;gap:4px;font-family:var(--font-mono);font-size:13px;font-weight:600;color:var(--text-body)"><i class="ph-fill ph-star" style="color:var(--marigold-600);font-size:14px"></i>{{ p.rating }}</span>
+              <div style="margin-top:auto;display:flex;align-items:center;justify-content:space-between;gap:10px;padding-top:8px">
+                <span style="display:flex;align-items:baseline;gap:6px"><span style="font-family:var(--font-mono);font-weight:700;font-size:20px;color:var(--text-strong)">{{ p.priceFmt }}</span><sc-if value="{{ p.oldPrice }}"><span style="font-family:var(--font-mono);font-weight:600;font-size:13px;color:var(--text-muted);text-decoration:line-through">{{ p.oldPriceFmt }}</span></sc-if></span>
+                <button class="nx-press" onClick="{{ p.add }}" aria-label="Сагсанд нэмэх" style="height:34px;padding:0 14px;display:inline-flex;align-items:center;gap:6px;font-weight:700;font-size:14px;border:2.5px solid var(--line-ink);border-radius:999px;background:var(--cobalt-600);color:var(--paper-0);cursor:pointer;box-shadow:var(--shadow-hard-sm)"><i class="ph-bold ph-plus"></i> Нэмэх</button>
+              </div>
+            </div>
+          </div>
+        </sc-for>
+      </div>
+    </section>
+
+    <!-- Trust band -->
+    <section class="nx-section-pad" style="max-width:1200px;margin:48px auto 0;padding:0 24px">
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px">
+        <div style="display:flex;gap:12px;align-items:center;background:var(--surface-card);border:2.5px solid var(--line-ink);border-radius:var(--radius-md);padding:18px;box-shadow:var(--shadow-hard-sm)"><i class="ph-fill ph-truck" style="font-size:30px;color:var(--cobalt-600)"></i><div><div style="font-weight:800;color:var(--text-strong)">24 цагт хүргэнэ</div><div style="font-size:13px;color:var(--text-muted)">Улаанбаатар хотод</div></div></div>
+        <div style="display:flex;gap:12px;align-items:center;background:var(--surface-card);border:2.5px solid var(--line-ink);border-radius:var(--radius-md);padding:18px;box-shadow:var(--shadow-hard-sm)"><i class="ph-fill ph-qr-code" style="font-size:30px;color:var(--cobalt-600)"></i><div><div style="font-weight:800;color:var(--text-strong)">QPay төлбөр</div><div style="font-size:13px;color:var(--text-muted)">Бүх банкны апп</div></div></div>
+        <div style="display:flex;gap:12px;align-items:center;background:var(--surface-card);border:2.5px solid var(--line-ink);border-radius:var(--radius-md);padding:18px;box-shadow:var(--shadow-hard-sm)"><i class="ph-fill ph-shield-check" style="font-size:30px;color:var(--cobalt-600)"></i><div><div style="font-weight:800;color:var(--text-strong)">Баталгаат бараа</div><div style="font-size:13px;color:var(--text-muted)">14 хоног буцаалт</div></div></div>
+      </div>
+    </section>
+  </sc-if>
+
+  <!-- ============ LIST ============ -->
+  <sc-if value="{{ isList }}">
+    <section class="nx-section-pad" style="max-width:1200px;margin:24px auto 0;padding:0 24px">
+      <h1 style="font-family:var(--font-display);font-weight:800;font-size:34px;margin:0 0 16px;color:var(--text-strong)">Бүх бараа</h1>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:12px">
+        <sc-for list="{{ catChips }}" as="c" hint-placeholder-count="6">
+          <button onClick="{{ c.pick }}" style="{{ c.style }}"><i class="ph-bold ph-{{ c.icon }}"></i> {{ c.label }}</button>
+        </sc-for>
+      </div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:20px">
+        <sc-for list="{{ typeChips }}" as="t" hint-placeholder-count="6">
+          <button onClick="{{ t.pick }}" style="{{ t.style }}">{{ t.label }}</button>
+        </sc-for>
+      </div>
+      <div style="font-family:var(--font-mono);font-size:13px;color:var(--text-muted);margin-bottom:16px">{{ shownCount }} бараа олдлоо</div>
+      <sc-if value="{{ hasResults }}">
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:20px">
+          <sc-for list="{{ shown }}" as="p" hint-placeholder-count="8">
+            <div class="nx-lift" onClick="{{ p.open }}" style="display:flex;flex-direction:column;background:var(--surface-card);border:2.5px solid var(--line-ink);border-radius:var(--radius-lg);box-shadow:var(--shadow-hard);overflow:hidden;cursor:pointer">
+              <div class="grain" style="position:relative;aspect-ratio:1/1;background:var(--paper-100);border-bottom:2.5px solid var(--line-ink);display:flex;align-items:center;justify-content:center">
+                <i class="ph-fill ph-{{ p.icon }}" style="font-size:64px;color:var(--ink-300)"></i>
+                <div style="position:absolute;top:10px;left:10px;display:flex;gap:6px">
+                  <sc-if value="{{ p.badge }}"><span style="{{ p.badgeStyle }}">{{ p.badgeLabel }}</span></sc-if>
+                  <sc-if value="{{ p.soldOut }}"><span style="font-family:var(--font-mono);font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;padding:3px 8px;border-radius:6px;border:2px solid var(--line-ink);background:var(--ink-900);color:var(--paper-0)">Дууссан</span></sc-if>
+                </div>
+                <button onClick="{{ p.fav }}" aria-label="Дуртай" style="{{ p.heartStyle }}"><i class="{{ p.heartClass }}"></i></button>
+              </div>
+              <div style="padding:16px;display:flex;flex-direction:column;gap:5px;flex:1">
+                <span style="font-family:var(--font-mono);font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--text-body)">{{ p.category }}</span>
+                <h3 style="font-family:var(--font-body);font-weight:700;font-size:18px;line-height:1.2;margin:0;color:var(--text-strong)">{{ p.name }}</h3>
+                <span style="display:flex;align-items:center;gap:4px;font-family:var(--font-mono);font-size:13px;font-weight:600;color:var(--text-body)"><i class="ph-fill ph-star" style="color:var(--marigold-600);font-size:14px"></i>{{ p.rating }}</span>
+                <div style="margin-top:auto;display:flex;align-items:center;justify-content:space-between;gap:10px;padding-top:8px">
+                  <span style="display:flex;align-items:baseline;gap:6px"><span style="font-family:var(--font-mono);font-weight:700;font-size:20px;color:var(--text-strong)">{{ p.priceFmt }}</span><sc-if value="{{ p.oldPrice }}"><span style="font-family:var(--font-mono);font-weight:600;font-size:13px;color:var(--text-muted);text-decoration:line-through">{{ p.oldPriceFmt }}</span></sc-if></span>
+                  <button class="nx-press" onClick="{{ p.add }}" aria-label="Сагсанд нэмэх" style="height:34px;padding:0 14px;display:inline-flex;align-items:center;gap:6px;font-weight:700;font-size:14px;border:2.5px solid var(--line-ink);border-radius:999px;background:var(--cobalt-600);color:var(--paper-0);cursor:pointer;box-shadow:var(--shadow-hard-sm)"><i class="ph-bold ph-plus"></i> Нэмэх</button>
+                </div>
+              </div>
+            </div>
+          </sc-for>
+        </div>
+      </sc-if>
+      <sc-if value="{{ noResults }}">
+        <div style="text-align:center;padding:60px 20px;color:var(--text-muted)">
+          <i class="ph ph-magnifying-glass" style="font-size:54px;color:var(--ink-300)"></i>
+          <p style="font-weight:700;color:var(--text-strong);margin:12px 0 4px">Бараа олдсонгүй 🐾</p>
+          <span style="font-size:14px">Өөр ангилал эсвэл хайлт оролдоно уу</span>
+        </div>
+      </sc-if>
+    </section>
+  </sc-if>
+
+  <!-- ============ DETAIL ============ -->
+  <sc-if value="{{ isDetail }}">
+    <section class="nx-section-pad" style="max-width:1200px;margin:24px auto 0;padding:0 24px">
+      <button onClick="{{ goBack }}" style="display:inline-flex;align-items:center;gap:6px;background:none;border:0;cursor:pointer;font-family:var(--font-body);font-weight:700;font-size:15px;color:var(--text-strong);margin-bottom:18px;padding:0"><i class="ph-bold ph-arrow-left"></i> Буцах</button>
+      <div class="nx-detail-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:32px;align-items:start">
+        <div class="grain" style="position:relative;aspect-ratio:1/1;background:var(--paper-100);border:4px solid var(--line-ink);border-radius:var(--radius-xl);box-shadow:var(--shadow-hard-lg);display:flex;align-items:center;justify-content:center;overflow:hidden">
+          <i class="ph-fill ph-{{ cur.icon }}" style="font-size:180px;color:var(--ink-300)"></i>
+          <sc-if value="{{ cur.badge }}"><div style="position:absolute;top:16px;left:16px"><span style="{{ cur.badgeStyle }}">{{ cur.badgeLabel }}</span></div></sc-if>
+        </div>
+        <div style="padding-top:6px">
+          <span style="font-family:var(--font-mono);font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--text-body)">{{ cur.category }}</span>
+          <h1 style="font-family:var(--font-display);font-weight:800;font-size:38px;line-height:1.05;letter-spacing:-.02em;margin:8px 0 10px;color:var(--text-strong)">{{ cur.name }}</h1>
+          <div style="font-family:var(--font-mono);font-size:14px;font-weight:600;color:var(--text-body);display:flex;align-items:center;gap:6px"><i class="ph-fill ph-star" style="color:var(--marigold-600)"></i> {{ cur.rating }} · 128 сэтгэгдэл</div>
+          <div style="display:flex;align-items:center;gap:12px;margin:18px 0">
+            <span style="font-family:var(--font-mono);font-weight:700;font-size:34px;color:var(--text-strong)">{{ cur.priceFmt }}</span>
+            <sc-if value="{{ cur.oldPrice }}"><span style="font-family:var(--font-mono);font-weight:600;font-size:18px;color:var(--text-muted);text-decoration:line-through">{{ cur.oldPriceFmt }}</span></sc-if>
+            <sc-if value="{{ cur.oldPrice }}"><span style="font-family:var(--font-mono);font-size:13px;font-weight:700;padding:3px 8px;border-radius:6px;border:2px solid var(--line-ink);background:var(--red-500);color:#fff">-{{ cur.discountPct }}%</span></sc-if>
+          </div>
+          <p style="font-size:16px;line-height:1.6;color:var(--text-body);max-width:460px;margin:0 0 22px">{{ cur.desc }}</p>
+          <div style="display:flex;gap:12px;align-items:stretch;flex-wrap:wrap">
+            <div style="display:inline-flex;align-items:center;border:2.5px solid var(--line-ink);border-radius:999px;background:var(--surface-card);box-shadow:var(--shadow-hard-sm);overflow:hidden">
+              <button onClick="{{ decDetail }}" aria-label="Хасах" style="width:46px;height:54px;border:0;background:none;cursor:pointer;font-size:20px;color:var(--ink-900)"><i class="ph-bold ph-minus"></i></button>
+              <span style="min-width:38px;text-align:center;font-family:var(--font-mono);font-weight:700;font-size:18px">{{ detailQty }}</span>
+              <button onClick="{{ incDetail }}" aria-label="Нэмэх" style="width:46px;height:54px;border:0;background:none;cursor:pointer;font-size:20px;color:var(--ink-900)"><i class="ph-bold ph-plus"></i></button>
+            </div>
+            <button class="nx-press" onClick="{{ addCur }}" style="flex:1;min-width:200px;height:56px;padding:0 24px;display:inline-flex;align-items:center;justify-content:center;gap:8px;font-weight:700;font-size:18px;border:2.5px solid var(--line-ink);border-radius:999px;background:var(--cobalt-600);color:var(--paper-0);cursor:pointer;box-shadow:var(--shadow-hard)"><i class="ph-bold ph-shopping-cart"></i> Сагсанд нэмэх</button>
+          </div>
+          <div style="margin-top:18px;border:2.5px dashed var(--line-ink);border-radius:var(--radius-md);padding:14px 16px;background:var(--surface-card)">
+            <div style="display:flex;gap:18px;flex-wrap:wrap;font-family:var(--font-mono);font-size:12px;color:var(--text-body)"><span><i class="ph-fill ph-truck"></i> 24 цагийн хүргэлт</span><span><i class="ph-fill ph-arrows-counter-clockwise"></i> 14 хоног буцаалт</span><span><i class="ph-fill ph-shield-check"></i> Баталгаат</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div style="display:flex;align-items:baseline;gap:12px;margin:48px 0 18px"><h2 style="font-family:var(--font-display);font-weight:800;font-size:26px;margin:0;color:var(--text-strong)">Сэтгэгдэл</h2><span style="font-family:var(--font-mono);font-size:14px;color:var(--text-muted)"><i class="ph-fill ph-star" style="color:var(--marigold-600)"></i> {{ cur.rating }} · 128 үнэлгээ</span></div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:18px">
+        <sc-for list="{{ reviews }}" as="r" hint-placeholder-count="3">
+          <div style="background:var(--surface-card);border:2.5px solid var(--line-ink);border-radius:var(--radius-lg);box-shadow:var(--shadow-hard-sm);padding:18px">
+            <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
+              <div style="width:40px;height:40px;flex:none;border-radius:999px;border:2.5px solid var(--line-ink);background:var(--marigold-500);display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-weight:800;color:var(--ink-900)">{{ r.initial }}</div>
+              <div><div style="font-weight:700;color:var(--text-strong)">{{ r.name }}</div><div style="font-family:var(--font-mono);font-size:11px;color:var(--text-muted)">{{ r.date }}</div></div>
+            </div>
+            <div style="display:flex;gap:2px;margin-bottom:8px"><sc-for list="{{ r.stars }}" as="s" hint-placeholder-count="5"><i class="{{ s.cls }}" style="color:var(--marigold-600);font-size:15px"></i></sc-for></div>
+            <p style="font-size:14px;line-height:1.55;margin:0;color:var(--text-body)">{{ r.text }}</p>
+          </div>
+        </sc-for>
+      </div>
+
+      <h2 style="font-family:var(--font-display);font-weight:800;font-size:26px;margin:48px 0 18px;color:var(--text-strong)">Холбоотой бараа</h2>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:20px;margin-bottom:8px">
+        <sc-for list="{{ related }}" as="p" hint-placeholder-count="4">
+          <div class="nx-lift" onClick="{{ p.open }}" style="display:flex;flex-direction:column;background:var(--surface-card);border:2.5px solid var(--line-ink);border-radius:var(--radius-lg);box-shadow:var(--shadow-hard);overflow:hidden;cursor:pointer">
+            <div class="grain" style="position:relative;aspect-ratio:1/1;background:var(--paper-100);border-bottom:2.5px solid var(--line-ink);display:flex;align-items:center;justify-content:center">
+              <i class="ph-fill ph-{{ p.icon }}" style="font-size:60px;color:var(--ink-300)"></i>
+              <sc-if value="{{ p.badge }}"><div style="position:absolute;top:10px;left:10px"><span style="{{ p.badgeStyle }}">{{ p.badgeLabel }}</span></div></sc-if>
+            </div>
+            <div style="padding:14px;display:flex;flex-direction:column;gap:5px;flex:1">
+              <span style="font-family:var(--font-mono);font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--text-body)">{{ p.category }}</span>
+              <h3 style="font-family:var(--font-body);font-weight:700;font-size:16px;line-height:1.2;margin:0;color:var(--text-strong)">{{ p.name }}</h3>
+              <div style="margin-top:auto;display:flex;align-items:center;justify-content:space-between;gap:8px;padding-top:6px">
+                <span style="font-family:var(--font-mono);font-weight:700;font-size:17px;color:var(--text-strong)">{{ p.priceFmt }}</span>
+                <button class="nx-press" onClick="{{ p.add }}" aria-label="Нэмэх" style="width:34px;height:34px;display:inline-flex;align-items:center;justify-content:center;border:2.5px solid var(--line-ink);border-radius:999px;background:var(--cobalt-600);color:var(--paper-0);cursor:pointer;box-shadow:var(--shadow-hard-sm)"><i class="ph-bold ph-plus"></i></button>
+              </div>
+            </div>
+          </div>
+        </sc-for>
+      </div>
+    </section>
+  </sc-if>
+
+  <!-- ============ CHECKOUT (QPay) ============ -->
+  <sc-if value="{{ isCheckout }}">
+    <section class="nx-section-pad" style="max-width:1200px;margin:24px auto 0;padding:0 24px">
+      <sc-if value="{{ notPaid }}">
+        <button onClick="{{ goBack }}" style="display:inline-flex;align-items:center;gap:6px;background:none;border:0;cursor:pointer;font-family:var(--font-body);font-weight:700;font-size:15px;color:var(--text-strong);margin-bottom:18px;padding:0"><i class="ph-bold ph-arrow-left"></i> Сагс руу буцах</button>
+        <h1 style="font-family:var(--font-display);font-weight:800;font-size:34px;margin:0 0 22px;color:var(--text-strong)">Төлбөр төлөх</h1>
+        <div class="nx-checkout-grid" style="display:grid;grid-template-columns:1fr .85fr;gap:28px;align-items:start">
+          <!-- left: delivery + summary -->
+          <div style="display:flex;flex-direction:column;gap:20px">
+            <div style="background:var(--surface-card);border:2.5px solid var(--line-ink);border-radius:var(--radius-lg);box-shadow:var(--shadow-hard);padding:22px">
+              <h2 style="font-family:var(--font-display);font-weight:800;font-size:20px;margin:0 0 16px;color:var(--text-strong)"><i class="ph-fill ph-map-pin"></i> Хүргэлтийн мэдээлэл</h2>
+              <div style="display:grid;gap:12px">
+                <input placeholder="Нэр" value="Болормаа Б." style="height:46px;padding:0 16px;font-family:var(--font-body);font-size:15px;border:2.5px solid var(--line-ink);border-radius:var(--radius-md);background:var(--surface-page)">
+                <input placeholder="Утасны дугаар" value="9911-2233" style="height:46px;padding:0 16px;font-family:var(--font-body);font-size:15px;border:2.5px solid var(--line-ink);border-radius:var(--radius-md);background:var(--surface-page)">
+                <input placeholder="Хаяг (дүүрэг, хороо, байр)" value="ХУД, 11-р хороо, 43-р байр, 12 тоот" style="height:46px;padding:0 16px;font-family:var(--font-body);font-size:15px;border:2.5px solid var(--line-ink);border-radius:var(--radius-md);background:var(--surface-page)">
+              </div>
+            </div>
+            <div style="background:var(--surface-card);border:2.5px solid var(--line-ink);border-radius:var(--radius-lg);box-shadow:var(--shadow-hard);padding:22px">
+              <h2 style="font-family:var(--font-display);font-weight:800;font-size:20px;margin:0 0 14px;color:var(--text-strong)"><i class="ph-fill ph-bag"></i> Захиалга</h2>
+              <div style="display:flex;flex-direction:column;gap:10px">
+                <sc-for list="{{ cartItems }}" as="it" hint-placeholder-count="2">
+                  <div style="display:flex;align-items:center;gap:12px">
+                    <div class="grain" style="width:48px;height:48px;flex:none;border:2.5px solid var(--line-ink);border-radius:var(--radius-sm);background:var(--paper-100);display:flex;align-items:center;justify-content:center"><i class="ph-fill ph-{{ it.icon }}" style="font-size:24px;color:var(--ink-300)"></i></div>
+                    <div style="flex:1;min-width:0"><div style="font-weight:700;font-size:14px;color:var(--text-strong);line-height:1.25">{{ it.name }}</div><div style="font-family:var(--font-mono);font-size:12px;color:var(--text-muted)">{{ it.qty }} ш × {{ it.priceFmt }}</div></div>
+                    <div style="font-family:var(--font-mono);font-weight:700;font-size:14px;color:var(--text-strong)">{{ it.lineFmt }}</div>
+                  </div>
+                </sc-for>
+              </div>
+              <div style="border-top:1px dashed var(--line-soft);margin-top:14px;padding-top:14px;display:flex;flex-direction:column;gap:8px;font-size:14px">
+                <div style="display:flex;justify-content:space-between"><span>Дэд дүн</span><b style="font-family:var(--font-mono)">{{ subtotalFmt }}</b></div>
+                <div style="display:flex;justify-content:space-between"><span>Хүргэлт</span><b style="font-family:var(--font-mono)">{{ shipFmt }}</b></div>
+                <div style="display:flex;justify-content:space-between;border-top:2px solid var(--line-ink);padding-top:10px;margin-top:2px"><span style="font-weight:800">Нийт төлөх</span><b style="font-family:var(--font-mono);font-size:20px;color:var(--text-strong)">{{ totalFmt }}</b></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- right: QPay panel -->
+          <div style="background:var(--surface-card);border:4px solid var(--line-ink);border-radius:var(--radius-xl);box-shadow:var(--shadow-hard-lg);overflow:hidden">
+            <div style="background:var(--cobalt-600);color:var(--paper-0);padding:18px 22px;display:flex;align-items:center;justify-content:space-between;border-bottom:4px solid var(--line-ink)">
+              <span style="display:flex;align-items:center;gap:8px;font-family:var(--font-display);font-weight:800;font-size:22px"><i class="ph-fill ph-qr-code"></i> QPay</span>
+              <span style="font-family:var(--font-mono);font-size:12px;font-weight:700;background:var(--marigold-500);color:var(--ink-900);padding:4px 10px;border-radius:999px;border:2px solid var(--ink-900)">Сонгосон</span>
+            </div>
+            <div style="padding:24px;text-align:center">
+              <div style="font-family:var(--font-mono);font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--text-muted)">Төлөх дүн</div>
+              <div style="font-family:var(--font-mono);font-weight:700;font-size:32px;color:var(--text-strong);margin:2px 0 4px">{{ totalFmt }}</div>
+              <div style="font-family:var(--font-mono);font-size:12px;color:var(--red-500);font-weight:700;margin-bottom:16px"><i class="ph-bold ph-clock"></i> QR хүчинтэй: {{ timer }}</div>
+              <div class="grain" style="width:220px;height:220px;margin:0 auto;padding:12px;background:#fff;border:3px solid var(--line-ink);border-radius:var(--radius-md);box-shadow:var(--shadow-hard)">{{ qrEl }}</div>
+              <p style="font-size:14px;color:var(--text-body);margin:16px 0 4px;max-width:300px;margin-left:auto;margin-right:auto">Банкны аппаа нээж <b>QR уншуулна</b> уу, эсвэл доороос банкаа сонгоно уу.</p>
+              <div style="font-family:var(--font-mono);font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--text-muted);margin:18px 0 12px;display:flex;align-items:center;gap:10px"><span style="flex:1;height:2px;background:var(--line-soft)"></span>Банкны апп<span style="flex:1;height:2px;background:var(--line-soft)"></span></div>
+              <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:10px">
+                <sc-for list="{{ banks }}" as="b" hint-placeholder-count="10">
+                  <button class="nx-bank" onClick="{{ b.pick }}" style="{{ b.style }}"><span style="{{ b.badgeStyle }}">{{ b.short }}</span><span style="font-size:11px;font-weight:700;line-height:1.1;color:var(--text-strong)">{{ b.name }}</span></button>
+                </sc-for>
+              </div>
+              <button class="nx-press" onClick="{{ payNow }}" style="width:100%;height:56px;margin-top:20px;display:inline-flex;align-items:center;justify-content:center;gap:8px;font-weight:700;font-size:18px;border:2.5px solid var(--line-ink);border-radius:999px;background:var(--green-500);color:#fff;cursor:pointer;box-shadow:var(--shadow-hard)"><i class="ph-bold ph-check-circle"></i> Төлбөр төлсөн</button>
+            </div>
+          </div>
+        </div>
+      </sc-if>
+
+      <!-- paid confirmation -->
+      <sc-if value="{{ paid }}">
+        <div style="max-width:560px;margin:24px auto;text-align:center;background:var(--surface-card);border:4px solid var(--line-ink);border-radius:var(--radius-xl);box-shadow:var(--shadow-hard-lg);padding:48px 32px">
+          <div style="width:96px;height:96px;margin:0 auto 18px;border-radius:999px;background:var(--green-500);border:3px solid var(--line-ink);display:flex;align-items:center;justify-content:center;color:#fff;font-size:54px;box-shadow:var(--shadow-hard);animation:nx-pop 380ms var(--ease-snap) both"><i class="ph-bold ph-check"></i></div>
+          <h1 style="font-family:var(--font-display);font-weight:900;font-size:34px;margin:0 0 8px;color:var(--text-strong)">Захиалга баталгаажлаа!</h1>
+          <p style="font-size:16px;color:var(--text-body);margin:0 0 6px">Баярлалаа 🐾 Бид удахгүй холбогдоно.</p>
+          <div style="display:inline-block;font-family:var(--font-mono);font-size:14px;font-weight:700;background:var(--marigold-200);border:2.5px solid var(--line-ink);border-radius:999px;padding:8px 18px;margin:10px 0 6px">Захиалгын дугаар: {{ orderNo }}</div>
+          <div style="font-family:var(--font-mono);font-size:14px;color:var(--text-muted);margin-bottom:24px">Төлсөн дүн: {{ totalFmt }} · QPay</div>
+          <button class="nx-press" onClick="{{ reset }}" style="height:52px;padding:0 28px;display:inline-flex;align-items:center;gap:8px;font-weight:700;font-size:16px;border:2.5px solid var(--line-ink);border-radius:999px;background:var(--cobalt-600);color:var(--paper-0);cursor:pointer;box-shadow:var(--shadow-hard)"><i class="ph-bold ph-house"></i> Нүүр хуудас руу</button>
+        </div>
+      </sc-if>
+    </section>
+  </sc-if>
+
+  <!-- ============ WISHLIST ============ -->
+  <sc-if value="{{ isWishlist }}">
+    <section class="nx-section-pad" style="max-width:1200px;margin:24px auto 0;padding:0 24px">
+      <button onClick="{{ goHome }}" style="display:inline-flex;align-items:center;gap:6px;background:none;border:0;cursor:pointer;font-family:var(--font-body);font-weight:700;font-size:15px;color:var(--text-strong);margin-bottom:18px;padding:0"><i class="ph-bold ph-arrow-left"></i> Нүүр</button>
+      <h1 style="font-family:var(--font-display);font-weight:800;font-size:34px;margin:0 0 6px;color:var(--text-strong)"><i class="ph-fill ph-heart" style="color:var(--red-500)"></i> Дуртай бараа</h1>
+      <div style="font-family:var(--font-mono);font-size:13px;color:var(--text-muted);margin-bottom:20px">{{ wishlistCount }} бараа хадгалсан</div>
+      <sc-if value="{{ wishlistEmpty }}">
+        <div style="text-align:center;padding:70px 20px;color:var(--text-muted)"><i class="ph ph-heart" style="font-size:56px;color:var(--ink-300)"></i><p style="font-weight:700;color:var(--text-strong);margin:12px 0 4px">Дуртай бараа алга байна 🐾</p><span style="font-size:14px">Бараан дээрх зүрхэн дээр дарж хадгалаарай</span><div style="margin-top:18px"><button class="nx-press" onClick="{{ goListAll }}" style="height:48px;padding:0 24px;border:2.5px solid var(--line-ink);border-radius:999px;background:var(--cobalt-600);color:var(--paper-0);font-weight:700;cursor:pointer;box-shadow:var(--shadow-hard)">Дэлгүүр үзэх</button></div></div>
+      </sc-if>
+      <sc-if value="{{ wishlistNotEmpty }}">
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:20px">
+          <sc-for list="{{ wishlistItems }}" as="p" hint-placeholder-count="3">
+            <div class="nx-lift" onClick="{{ p.open }}" style="display:flex;flex-direction:column;background:var(--surface-card);border:2.5px solid var(--line-ink);border-radius:var(--radius-lg);box-shadow:var(--shadow-hard);overflow:hidden;cursor:pointer">
+              <div class="grain" style="position:relative;aspect-ratio:1/1;background:var(--paper-100);border-bottom:2.5px solid var(--line-ink);display:flex;align-items:center;justify-content:center">
+                <i class="ph-fill ph-{{ p.icon }}" style="font-size:64px;color:var(--ink-300)"></i>
+                <div style="position:absolute;top:10px;left:10px;display:flex;gap:6px"><sc-if value="{{ p.badge }}"><span style="{{ p.badgeStyle }}">{{ p.badgeLabel }}</span></sc-if></div>
+                <button onClick="{{ p.fav }}" aria-label="Хасах" style="{{ p.heartStyle }}"><i class="{{ p.heartClass }}"></i></button>
+              </div>
+              <div style="padding:16px;display:flex;flex-direction:column;gap:5px;flex:1">
+                <span style="font-family:var(--font-mono);font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--text-body)">{{ p.category }}</span>
+                <h3 style="font-family:var(--font-body);font-weight:700;font-size:18px;line-height:1.2;margin:0;color:var(--text-strong)">{{ p.name }}</h3>
+                <div style="margin-top:auto;display:flex;align-items:center;justify-content:space-between;gap:10px;padding-top:8px">
+                  <span style="font-family:var(--font-mono);font-weight:700;font-size:20px;color:var(--text-strong)">{{ p.priceFmt }}</span>
+                  <button class="nx-press" onClick="{{ p.add }}" aria-label="Сагсанд нэмэх" style="height:34px;padding:0 14px;display:inline-flex;align-items:center;gap:6px;font-weight:700;font-size:14px;border:2.5px solid var(--line-ink);border-radius:999px;background:var(--cobalt-600);color:var(--paper-0);cursor:pointer;box-shadow:var(--shadow-hard-sm)"><i class="ph-bold ph-plus"></i> Нэмэх</button>
+                </div>
+              </div>
+            </div>
+          </sc-for>
+        </div>
+      </sc-if>
+    </section>
+  </sc-if>
+
+  <!-- ============ ACCOUNT ============ -->
+  <sc-if value="{{ isAccount }}">
+    <section class="nx-section-pad" style="max-width:1000px;margin:24px auto 0;padding:0 24px">
+      <button onClick="{{ goHome }}" style="display:inline-flex;align-items:center;gap:6px;background:none;border:0;cursor:pointer;font-family:var(--font-body);font-weight:700;font-size:15px;color:var(--text-strong);margin-bottom:18px;padding:0"><i class="ph-bold ph-arrow-left"></i> Нүүр</button>
+      <div class="grain" style="display:flex;align-items:center;gap:18px;flex-wrap:wrap;background:var(--cobalt-600);border:4px solid var(--line-ink);border-radius:var(--radius-xl);box-shadow:var(--shadow-hard-lg);padding:26px 28px;color:var(--paper-0)">
+        <div style="width:72px;height:72px;flex:none;border-radius:999px;border:3px solid var(--line-ink);background:var(--marigold-500);display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-weight:900;font-size:32px;color:var(--ink-900);box-shadow:var(--shadow-hard)">{{ userInitial }}</div>
+        <div style="flex:1;min-width:160px">
+          <h1 style="font-family:var(--font-display);font-weight:800;font-size:28px;margin:0;color:var(--paper-0)">{{ userName }}</h1>
+          <div style="font-family:var(--font-mono);font-size:13px;color:var(--cobalt-100);margin-top:4px">{{ userPhone }} · {{ memberSince }}</div>
+        </div>
+        <button class="nx-press" onClick="{{ logout }}" style="height:44px;padding:0 18px;display:inline-flex;align-items:center;gap:8px;border:2.5px solid var(--line-ink);border-radius:999px;background:var(--surface-card);color:var(--text-strong);font-weight:700;cursor:pointer;box-shadow:var(--shadow-hard-sm)"><i class="ph-bold ph-sign-out"></i> Гарах</button>
+      </div>
+
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px;margin-top:20px">
+        <div style="background:var(--surface-card);border:2.5px solid var(--line-ink);border-radius:var(--radius-md);padding:18px;box-shadow:var(--shadow-hard-sm)"><div style="font-family:var(--font-mono);font-size:12px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.08em">Захиалга</div><div style="font-family:var(--font-display);font-weight:800;font-size:30px;color:var(--text-strong)">{{ orderCount }}</div></div>
+        <button class="nx-press" onClick="{{ goWishlist }}" style="text-align:left;background:var(--surface-card);border:2.5px solid var(--line-ink);border-radius:var(--radius-md);padding:18px;box-shadow:var(--shadow-hard-sm);cursor:pointer"><div style="font-family:var(--font-mono);font-size:12px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.08em">Дуртай</div><div style="font-family:var(--font-display);font-weight:800;font-size:30px;color:var(--text-strong)">{{ wishlistCount }} <i class="ph-fill ph-heart" style="font-size:20px;color:var(--red-500)"></i></div></button>
+        <button class="nx-press" onClick="{{ goLoyalty }}" style="text-align:left;background:var(--marigold-500);border:2.5px solid var(--line-ink);border-radius:var(--radius-md);padding:18px;box-shadow:var(--shadow-hard-sm);cursor:pointer"><div style="font-family:var(--font-mono);font-size:12px;color:var(--ink-900);text-transform:uppercase;letter-spacing:.08em">Оноо</div><div style="font-family:var(--font-display);font-weight:800;font-size:30px;color:var(--ink-900)">1,240</div></button>
+      </div>
+
+      <h2 style="font-family:var(--font-display);font-weight:800;font-size:24px;margin:32px 0 16px;color:var(--text-strong)">Миний захиалга</h2>
+      <div style="display:flex;flex-direction:column;gap:12px">
+        <sc-for list="{{ orders }}" as="o" hint-placeholder-count="3">
+          <button class="nx-press" onClick="{{ o.open }}" style="text-align:left;display:flex;align-items:center;gap:16px;background:var(--surface-card);border:2.5px solid var(--line-ink);border-radius:var(--radius-md);padding:16px;box-shadow:var(--shadow-hard-sm);cursor:pointer">
+            <div class="grain" style="width:52px;height:52px;flex:none;border:2.5px solid var(--line-ink);border-radius:var(--radius-sm);background:var(--paper-100);display:flex;align-items:center;justify-content:center"><i class="ph-fill ph-{{ o.icon }}" style="font-size:26px;color:var(--ink-300)"></i></div>
+            <div style="flex:1;min-width:0">
+              <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap"><span style="font-family:var(--font-mono);font-weight:700;color:var(--text-strong)">{{ o.no }}</span><span style="{{ o.statusStyle }}">{{ o.statusLabel }}</span></div>
+              <div style="font-size:13px;color:var(--text-muted);margin-top:3px">{{ o.date }} · {{ o.summary }}</div>
+            </div>
+            <div style="text-align:right"><div style="font-family:var(--font-mono);font-weight:700;color:var(--text-strong)">{{ o.total }}</div><div style="font-size:12px;color:var(--cobalt-600);font-weight:700">Дэлгэрэнгүй →</div></div>
+          </button>
+        </sc-for>
+      </div>
+
+      <h2 style="font-family:var(--font-display);font-weight:800;font-size:24px;margin:32px 0 16px;color:var(--text-strong)">Хадгалсан хаяг</h2>
+      <div style="display:flex;align-items:flex-start;gap:14px;background:var(--surface-card);border:2.5px dashed var(--line-ink);border-radius:var(--radius-md);padding:18px">
+        <i class="ph-fill ph-map-pin" style="font-size:26px;color:var(--cobalt-600)"></i>
+        <div style="flex:1"><div style="font-weight:700;color:var(--text-strong)">Гэр</div><div style="font-size:14px;color:var(--text-body)">ХУД, 11-р хороо, 43-р байр, 12 тоот · {{ userPhone }}</div></div>
+        <span style="font-family:var(--font-mono);font-size:12px;font-weight:700;color:var(--cobalt-600);cursor:pointer">Засах</span>
+      </div>
+    </section>
+  </sc-if>
+
+  <!-- ============ ORDER TRACKING ============ -->
+  <sc-if value="{{ isOrder }}">
+    <section class="nx-section-pad" style="max-width:980px;margin:24px auto 0;padding:0 24px">
+      <button onClick="{{ goAccount }}" style="display:inline-flex;align-items:center;gap:6px;background:none;border:0;cursor:pointer;font-family:var(--font-body);font-weight:700;font-size:15px;color:var(--text-strong);margin-bottom:18px;padding:0"><i class="ph-bold ph-arrow-left"></i> Захиалгууд</button>
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:24px">
+        <div><h1 style="font-family:var(--font-display);font-weight:800;font-size:32px;margin:0;color:var(--text-strong)">Захиалга {{ curOrder.no }}</h1><div style="font-family:var(--font-mono);font-size:13px;color:var(--text-muted);margin-top:4px">{{ curOrder.date }}</div></div>
+        <span style="{{ curOrder.statusStyle }}">{{ curOrder.statusLabel }}</span>
+      </div>
+      <div class="nx-detail-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:28px;align-items:start">
+        <div style="background:var(--surface-card);border:2.5px solid var(--line-ink);border-radius:var(--radius-lg);box-shadow:var(--shadow-hard);padding:24px">
+          <h2 style="font-family:var(--font-display);font-weight:800;font-size:20px;margin:0 0 20px;color:var(--text-strong)"><i class="ph-fill ph-truck"></i> Хүргэлтийн явц</h2>
+          <div style="display:flex;flex-direction:column;gap:20px">
+            <sc-for list="{{ curOrder.steps }}" as="s" hint-placeholder-count="5">
+              <div style="display:flex;gap:14px;align-items:flex-start">
+                <div style="{{ s.dotStyle }}"><i class="ph-bold ph-{{ s.icon }}"></i></div>
+                <div style="padding-top:4px"><div style="{{ s.labelStyle }}">{{ s.label }}</div><div style="font-size:12px;color:var(--text-muted)">{{ s.sub }}</div></div>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+        <div style="background:var(--surface-card);border:2.5px solid var(--line-ink);border-radius:var(--radius-lg);box-shadow:var(--shadow-hard);padding:24px">
+          <h2 style="font-family:var(--font-display);font-weight:800;font-size:20px;margin:0 0 16px;color:var(--text-strong)"><i class="ph-fill ph-bag"></i> Бараа</h2>
+          <div style="display:flex;flex-direction:column;gap:12px">
+            <sc-for list="{{ curOrder.items }}" as="it" hint-placeholder-count="2">
+              <div style="display:flex;flex-direction:column;gap:10px;padding-bottom:14px;border-bottom:1px dashed var(--line-soft)">
+                <div style="display:flex;align-items:center;gap:12px">
+                  <div class="grain" style="width:48px;height:48px;flex:none;border:2.5px solid var(--line-ink);border-radius:var(--radius-sm);background:var(--paper-100);display:flex;align-items:center;justify-content:center"><i class="ph-fill ph-{{ it.icon }}" style="font-size:24px;color:var(--ink-300)"></i></div>
+                  <div style="flex:1;min-width:0"><div style="font-weight:700;font-size:14px;color:var(--text-strong);line-height:1.25">{{ it.name }}</div><div style="font-family:var(--font-mono);font-size:12px;color:var(--text-muted)">{{ it.qty }} ширхэг</div></div>
+                  <div style="font-family:var(--font-mono);font-weight:700;font-size:14px;color:var(--text-strong)">{{ it.lineFmt }}</div>
+                </div>
+                <sc-if value="{{ it.showBtn }}">
+                  <button class="nx-press" onClick="{{ it.start }}" style="align-self:flex-start;height:36px;padding:0 14px;display:inline-flex;align-items:center;gap:6px;font-weight:700;font-size:13px;border:2.5px solid var(--line-ink);border-radius:999px;background:var(--marigold-500);color:var(--ink-900);cursor:pointer;box-shadow:var(--shadow-hard-sm)"><i class="ph-bold ph-star"></i> Үнэлгээ өгөх</button>
+                </sc-if>
+                <sc-if value="{{ it.reviewed }}">
+                  <span style="align-self:flex-start;display:inline-flex;align-items:center;gap:6px;font-family:var(--font-mono);font-size:12px;font-weight:700;color:var(--green-500);background:var(--green-100);border:2px solid var(--line-ink);border-radius:999px;padding:5px 12px"><i class="ph-fill ph-check-circle"></i> Үнэлгээ илгээгдсэн</span>
+                </sc-if>
+                <sc-if value="{{ it.reviewing }}">
+                  <div style="background:var(--surface-page);border:2.5px solid var(--line-ink);border-radius:var(--radius-md);padding:14px">
+                    <div style="font-family:var(--font-mono);font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--text-muted);margin-bottom:8px">Үнэлгээ</div>
+                    <div style="display:flex;gap:4px;margin-bottom:12px">
+                      <sc-for list="{{ reviewStars }}" as="s" hint-placeholder-count="5">
+                        <button onClick="{{ s.pick }}" aria-label="Од" style="border:0;background:none;cursor:pointer;padding:0;font-size:30px;color:var(--marigold-600);line-height:1"><i class="{{ s.cls }}"></i></button>
+                      </sc-for>
+                    </div>
+                    <textarea value="{{ reviewText }}" onInput="{{ onReviewText }}" placeholder="Бараа танд таалагдсан уу? Бусдад зориулж сэтгэгдлээ үлдээгээрэй…" style="width:100%;min-height:74px;padding:12px 14px;font-family:var(--font-body);font-size:14px;border:2.5px solid var(--line-ink);border-radius:var(--radius-sm);background:var(--surface-card);resize:vertical;box-sizing:border-box"></textarea>
+                    <div style="display:flex;gap:10px;margin-top:12px">
+                      <button class="nx-press" onClick="{{ submitReview }}" style="height:42px;padding:0 20px;display:inline-flex;align-items:center;gap:6px;font-weight:700;font-size:14px;border:2.5px solid var(--line-ink);border-radius:999px;background:var(--cobalt-600);color:var(--paper-0);cursor:pointer;box-shadow:var(--shadow-hard-sm)"><i class="ph-bold ph-paper-plane-tilt"></i> Илгээх</button>
+                      <button onClick="{{ cancelReview }}" style="height:42px;padding:0 18px;display:inline-flex;align-items:center;font-weight:700;font-size:14px;border:2.5px solid var(--line-ink);border-radius:999px;background:var(--surface-card);color:var(--text-strong);cursor:pointer">Болих</button>
+                    </div>
+                  </div>
+                </sc-if>
+              </div>
+            </sc-for>
+          </div>
+          <div style="border-top:2px solid var(--line-ink);margin-top:16px;padding-top:14px;display:flex;justify-content:space-between;align-items:center"><span style="font-weight:800;color:var(--text-strong)">Нийт төлсөн</span><b style="font-family:var(--font-mono);font-size:20px;color:var(--text-strong)">{{ curOrder.total }}</b></div>
+          <div style="margin-top:14px;font-family:var(--font-mono);font-size:12px;color:var(--green-500);font-weight:700"><i class="ph-fill ph-check-circle"></i> QPay-ээр төлсөн</div>
+        </div>
+      </div>
+    </section>
+  </sc-if>
+
+  <!-- ============ AUTH ============ -->
+  <sc-if value="{{ isAuth }}">
+    <section class="nx-section-pad" style="max-width:440px;margin:40px auto 0;padding:0 24px">
+      <div class="grain" style="background:var(--surface-card);border:4px solid var(--line-ink);border-radius:var(--radius-xl);box-shadow:var(--shadow-hard-lg);padding:32px 28px">
+        <div style="text-align:center;margin-bottom:22px"><img src="ds/assets/logo-mark.svg" width="56" height="56" alt=""><h1 style="font-family:var(--font-display);font-weight:800;font-size:26px;margin:10px 0 2px;color:var(--text-strong)">Тавтай морил 🐾</h1><p style="font-size:14px;color:var(--text-muted);margin:0">Нэвтэрч захиалгаа хянаарай</p></div>
+        <div style="display:flex;border:2.5px solid var(--line-ink);border-radius:999px;overflow:hidden;margin-bottom:18px"><button style="flex:1;padding:11px;border:0;background:var(--cobalt-600);color:#fff;font-family:var(--font-mono);font-weight:700;font-size:13px;cursor:pointer">Нэвтрэх</button><button style="flex:1;padding:11px;border:0;border-left:2.5px solid var(--line-ink);background:var(--surface-card);color:var(--text-strong);font-family:var(--font-mono);font-weight:700;font-size:13px;cursor:pointer">Бүртгүүлэх</button></div>
+        <div style="display:flex;flex-direction:column;gap:12px">
+          <input placeholder="Утасны дугаар" value="9911-2233" style="height:50px;padding:0 16px;font-family:var(--font-body);font-size:15px;border:2.5px solid var(--line-ink);border-radius:var(--radius-md);background:var(--surface-page)">
+          <input type="password" placeholder="Нууц үг" value="123456" style="height:50px;padding:0 16px;font-family:var(--font-body);font-size:15px;border:2.5px solid var(--line-ink);border-radius:var(--radius-md);background:var(--surface-page)">
+        </div>
+        <div style="text-align:right;margin:10px 0 16px"><span style="font-family:var(--font-mono);font-size:12px;font-weight:700;color:var(--cobalt-600);cursor:pointer">Нууц үг мартсан?</span></div>
+        <button class="nx-press" onClick="{{ login }}" style="width:100%;height:54px;display:inline-flex;align-items:center;justify-content:center;gap:8px;font-weight:700;font-size:17px;border:2.5px solid var(--line-ink);border-radius:999px;background:var(--cobalt-600);color:var(--paper-0);cursor:pointer;box-shadow:var(--shadow-hard)"><i class="ph-bold ph-sign-in"></i> Нэвтрэх</button>
+        <div style="display:flex;align-items:center;gap:10px;margin:18px 0;font-family:var(--font-mono);font-size:11px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.1em"><span style="flex:1;height:2px;background:var(--line-soft)"></span>эсвэл<span style="flex:1;height:2px;background:var(--line-soft)"></span></div>
+        <button class="nx-press" onClick="{{ login }}" style="width:100%;height:50px;display:inline-flex;align-items:center;justify-content:center;gap:8px;font-weight:700;font-size:15px;border:2.5px solid var(--line-ink);border-radius:999px;background:var(--surface-card);color:var(--text-strong);cursor:pointer;box-shadow:var(--shadow-hard-sm)"><i class="ph-fill ph-device-mobile"></i> Утасны дугаараар (OTP)</button>
+      </div>
+    </section>
+  </sc-if>
+
+  <!-- ============ FAQ / HELP ============ -->
+  <sc-if value="{{ isFaq }}">
+    <section class="nx-section-pad" style="max-width:780px;margin:24px auto 0;padding:0 24px">
+      <button onClick="{{ goHome }}" style="display:inline-flex;align-items:center;gap:6px;background:none;border:0;cursor:pointer;font-family:var(--font-body);font-weight:700;font-size:15px;color:var(--text-strong);margin-bottom:18px;padding:0"><i class="ph-bold ph-arrow-left"></i> Нүүр</button>
+      <h1 style="font-family:var(--font-display);font-weight:800;font-size:34px;margin:0 0 6px;color:var(--text-strong)">Тусламжийн төв</h1>
+      <p style="font-size:15px;color:var(--text-muted);margin:0 0 24px">Хүргэлт, төлбөр, буцаалтын талаар түгээмэл асуултууд.</p>
+      <div style="display:flex;flex-direction:column;gap:12px">
+        <sc-for list="{{ faqs }}" as="f" hint-placeholder-count="5">
+          <div style="background:var(--surface-card);border:2.5px solid var(--line-ink);border-radius:var(--radius-md);box-shadow:var(--shadow-hard-sm);overflow:hidden">
+            <button onClick="{{ f.toggle }}" style="width:100%;display:flex;align-items:center;justify-content:space-between;gap:12px;text-align:left;padding:16px 18px;border:0;background:none;cursor:pointer;font-family:var(--font-body);font-weight:700;font-size:16px;color:var(--text-strong)"><span>{{ f.q }}</span><i class="ph-bold ph-{{ f.sign }}" style="font-size:18px;flex:none"></i></button>
+            <sc-if value="{{ f.open }}"><div style="padding:0 18px 18px;font-size:14px;line-height:1.6;color:var(--text-body)">{{ f.a }}</div></sc-if>
+          </div>
+        </sc-for>
+      </div>
+      <div class="grain" style="margin-top:24px;background:var(--ink-900);border:2.5px solid var(--line-ink);border-radius:var(--radius-lg);box-shadow:var(--shadow-hard);padding:24px;display:flex;align-items:center;gap:16px;flex-wrap:wrap;color:var(--paper-0)">
+        <i class="ph-fill ph-headset" style="font-size:36px;color:var(--marigold-500)"></i>
+        <div style="flex:1;min-width:180px"><div style="font-family:var(--font-display);font-weight:800;font-size:20px;color:var(--paper-0)">Хариулт олдсонгүй юу?</div><div style="font-size:14px;color:var(--ink-300)">Бид Даваа–Бямба 09:00–20:00 цагт тусална.</div></div>
+        <span style="font-family:var(--font-mono);font-weight:700;font-size:18px;color:var(--marigold-500)"><i class="ph-fill ph-phone"></i> 7700-1234</span>
+      </div>
+    </section>
+  </sc-if>
+
+  <!-- ============ ABOUT ============ -->
+  <sc-if value="{{ isAbout }}">
+    <section class="nx-section-pad" style="max-width:1000px;margin:24px auto 0;padding:0 24px">
+      <button onClick="{{ goHome }}" style="display:inline-flex;align-items:center;gap:6px;background:none;border:0;cursor:pointer;font-family:var(--font-body);font-weight:700;font-size:15px;color:var(--text-strong);margin-bottom:18px;padding:0"><i class="ph-bold ph-arrow-left"></i> Нүүр</button>
+      <div class="grain" style="position:relative;background:var(--cobalt-600);border:4px solid var(--line-ink);border-radius:var(--radius-xl);box-shadow:var(--shadow-hard-lg);padding:48px 36px;text-align:center;overflow:hidden;color:var(--paper-0)">
+        <div style="position:absolute;top:18px;right:28px;font-family:var(--font-display);font-style:italic;font-weight:900;font-size:44px;color:transparent;-webkit-text-stroke:2px var(--marigold-500);transform:rotate(8deg)">МЯУ!</div>
+        <img src="ds/assets/logo-mark-cobalt.svg" width="80" height="80" alt="">
+        <h1 style="font-family:var(--font-display);font-weight:900;font-size:42px;margin:14px 0 10px;color:var(--paper-0)">Бид амьтдыг гэр бүл шиг хайрладаг</h1>
+        <p style="font-size:17px;line-height:1.55;max-width:560px;margin:0 auto;color:var(--cobalt-100)">Нөхөр 2024 онд Улаанбаатарт үүсгэн байгуулагдсан. Бидний зорилго — Монголын тэжээвэр амьтан бүрт чанартай хоол, асрамжийг хүргэх.</p>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;margin-top:24px">
+        <div style="background:var(--surface-card);border:2.5px solid var(--line-ink);border-radius:var(--radius-md);padding:22px;box-shadow:var(--shadow-hard-sm)"><i class="ph-fill ph-heart" style="font-size:32px;color:var(--red-500)"></i><h3 style="font-family:var(--font-display);font-weight:800;font-size:19px;margin:10px 0 6px;color:var(--text-strong)">Хайр</h3><p style="font-size:14px;color:var(--text-body);margin:0">Амьтан бүрд анхаарал, халамжтай хандана.</p></div>
+        <div style="background:var(--surface-card);border:2.5px solid var(--line-ink);border-radius:var(--radius-md);padding:22px;box-shadow:var(--shadow-hard-sm)"><i class="ph-fill ph-shield-check" style="font-size:32px;color:var(--green-500)"></i><h3 style="font-family:var(--font-display);font-weight:800;font-size:19px;margin:10px 0 6px;color:var(--text-strong)">Чанар</h3><p style="font-size:14px;color:var(--text-body);margin:0">Зөвхөн баталгаат, шалгагдсан брэндүүд.</p></div>
+        <div style="background:var(--surface-card);border:2.5px solid var(--line-ink);border-radius:var(--radius-md);padding:22px;box-shadow:var(--shadow-hard-sm)"><i class="ph-fill ph-truck" style="font-size:32px;color:var(--cobalt-600)"></i><h3 style="font-family:var(--font-display);font-weight:800;font-size:19px;margin:10px 0 6px;color:var(--text-strong)">Хурд</h3><p style="font-size:14px;color:var(--text-body);margin:0">Хотод 24 цагт хүргэх найдвартай үйлчилгээ.</p></div>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:16px">
+        <div style="background:var(--marigold-500);border:2.5px solid var(--line-ink);border-radius:var(--radius-md);padding:22px;text-align:center;box-shadow:var(--shadow-hard-sm)"><div style="font-family:var(--font-display);font-weight:900;font-size:34px;color:var(--ink-900)">12,000+</div><div style="font-family:var(--font-mono);font-size:12px;font-weight:700;text-transform:uppercase;color:var(--ink-900)">Гэр бүл</div></div>
+        <div style="background:var(--peach-500);border:2.5px solid var(--line-ink);border-radius:var(--radius-md);padding:22px;text-align:center;box-shadow:var(--shadow-hard-sm)"><div style="font-family:var(--font-display);font-weight:900;font-size:34px;color:var(--ink-900)">800+</div><div style="font-family:var(--font-mono);font-size:12px;font-weight:700;text-transform:uppercase;color:var(--ink-900)">Бараа</div></div>
+        <div style="background:var(--cobalt-200);border:2.5px solid var(--line-ink);border-radius:var(--radius-md);padding:22px;text-align:center;box-shadow:var(--shadow-hard-sm)"><div style="font-family:var(--font-display);font-weight:900;font-size:34px;color:var(--ink-900)">4.8★</div><div style="font-family:var(--font-mono);font-size:12px;font-weight:700;text-transform:uppercase;color:var(--ink-900)">Үнэлгээ</div></div>
+      </div>
+    </section>
+  </sc-if>
+
+  <!-- ============ SALE ============ -->
+  <sc-if value="{{ isSale }}">
+    <section class="nx-section-pad" style="max-width:1200px;margin:24px auto 0;padding:0 24px">
+      <button onClick="{{ goHome }}" style="display:inline-flex;align-items:center;gap:6px;background:none;border:0;cursor:pointer;font-family:var(--font-body);font-weight:700;font-size:15px;color:var(--text-strong);margin-bottom:18px;padding:0"><i class="ph-bold ph-arrow-left"></i> Нүүр</button>
+      <div class="grain" style="position:relative;background:var(--red-500);border:4px solid var(--line-ink);border-radius:var(--radius-xl);box-shadow:var(--shadow-hard-lg);padding:40px 32px;overflow:hidden;color:#fff">
+        <div style="position:absolute;bottom:16px;right:30px;font-family:var(--font-display);font-style:italic;font-weight:900;font-size:54px;color:transparent;-webkit-text-stroke:2px var(--marigold-500);transform:rotate(-8deg)">МЯУ!</div>
+        <span style="font-family:var(--font-mono);text-transform:uppercase;letter-spacing:.14em;font-size:12px;font-weight:700;background:var(--marigold-500);color:var(--ink-900);padding:4px 12px;border-radius:999px;border:2px solid var(--ink-900)">Зуны хямдрал</span>
+        <h1 style="font-family:var(--font-display);font-weight:900;font-size:52px;margin:14px 0 8px;color:#fff">-30% хүртэл хямдрал</h1>
+        <p style="font-size:16px;color:#fff;opacity:.9;margin:0;font-family:var(--font-mono)"><i class="ph-bold ph-clock"></i> Дуусахад: 2 өдөр 06:42:18</p>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:20px;margin-top:24px">
+        <sc-for list="{{ saleItems }}" as="p" hint-placeholder-count="3">
+          <div class="nx-lift" onClick="{{ p.open }}" style="display:flex;flex-direction:column;background:var(--surface-card);border:2.5px solid var(--line-ink);border-radius:var(--radius-lg);box-shadow:var(--shadow-hard);overflow:hidden;cursor:pointer">
+            <div class="grain" style="position:relative;aspect-ratio:1/1;background:var(--paper-100);border-bottom:2.5px solid var(--line-ink);display:flex;align-items:center;justify-content:center">
+              <i class="ph-fill ph-{{ p.icon }}" style="font-size:64px;color:var(--ink-300)"></i>
+              <div style="position:absolute;top:10px;left:10px"><sc-if value="{{ p.badge }}"><span style="{{ p.badgeStyle }}">{{ p.badgeLabel }}</span></sc-if></div>
+              <button onClick="{{ p.fav }}" aria-label="Дуртай" style="{{ p.heartStyle }}"><i class="{{ p.heartClass }}"></i></button>
+            </div>
+            <div style="padding:16px;display:flex;flex-direction:column;gap:5px;flex:1">
+              <span style="font-family:var(--font-mono);font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--text-body)">{{ p.category }}</span>
+              <h3 style="font-family:var(--font-body);font-weight:700;font-size:18px;line-height:1.2;margin:0;color:var(--text-strong)">{{ p.name }}</h3>
+              <div style="margin-top:auto;display:flex;align-items:center;justify-content:space-between;gap:10px;padding-top:8px">
+                <span style="display:flex;align-items:baseline;gap:6px"><span style="font-family:var(--font-mono);font-weight:700;font-size:20px;color:var(--text-strong)">{{ p.priceFmt }}</span><sc-if value="{{ p.oldPrice }}"><span style="font-family:var(--font-mono);font-weight:600;font-size:13px;color:var(--text-muted);text-decoration:line-through">{{ p.oldPriceFmt }}</span></sc-if></span>
+                <button class="nx-press" onClick="{{ p.add }}" aria-label="Сагсанд нэмэх" style="height:34px;padding:0 14px;display:inline-flex;align-items:center;gap:6px;font-weight:700;font-size:14px;border:2.5px solid var(--line-ink);border-radius:999px;background:var(--cobalt-600);color:var(--paper-0);cursor:pointer;box-shadow:var(--shadow-hard-sm)"><i class="ph-bold ph-plus"></i> Нэмэх</button>
+              </div>
+            </div>
+          </div>
+        </sc-for>
+      </div>
+    </section>
+  </sc-if>
+
+  <!-- ============ LOYALTY ============ -->
+  <sc-if value="{{ isLoyalty }}">
+    <section class="nx-section-pad" style="max-width:900px;margin:24px auto 0;padding:0 24px">
+      <button onClick="{{ goHome }}" style="display:inline-flex;align-items:center;gap:6px;background:none;border:0;cursor:pointer;font-family:var(--font-body);font-weight:700;font-size:15px;color:var(--text-strong);margin-bottom:18px;padding:0"><i class="ph-bold ph-arrow-left"></i> Нүүр</button>
+      <div class="grain" style="background:var(--ink-900);border:4px solid var(--line-ink);border-radius:var(--radius-xl);box-shadow:var(--shadow-hard-lg);padding:32px;color:var(--paper-0)">
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap">
+          <div><span style="font-family:var(--font-mono);font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--marigold-500)"><i class="ph-fill ph-paw-print"></i> {{ loyalty.tier }}</span><div style="font-family:var(--font-display);font-weight:900;font-size:54px;line-height:1;margin-top:6px;color:var(--paper-0)">1,240 <span style="font-size:24px;color:var(--marigold-500)">оноо</span></div></div>
+          <i class="ph-fill ph-medal" style="font-size:72px;color:var(--marigold-500)"></i>
+        </div>
+        <div style="margin-top:22px"><div style="height:18px;background:var(--ink-700);border:2.5px solid var(--paper-0);border-radius:999px;overflow:hidden"><div style="{{ loyalty.progressStyle }};height:100%;background:var(--marigold-500)"></div></div><div style="font-family:var(--font-mono);font-size:12px;color:var(--ink-300);margin-top:8px">{{ loyalty.nextLabel }}</div></div>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin-top:20px">
+        <div style="background:var(--surface-card);border:2.5px solid var(--line-ink);border-radius:var(--radius-md);padding:20px;box-shadow:var(--shadow-hard-sm)"><i class="ph-fill ph-percent" style="font-size:28px;color:var(--cobalt-600)"></i><h3 style="font-family:var(--font-display);font-weight:800;font-size:17px;margin:10px 0 4px;color:var(--text-strong)">Онцгой хямдрал</h3><p style="font-size:13px;color:var(--text-body);margin:0">Гишүүдэд зориулсан нууц хямдрал.</p></div>
+        <div style="background:var(--surface-card);border:2.5px solid var(--line-ink);border-radius:var(--radius-md);padding:20px;box-shadow:var(--shadow-hard-sm)"><i class="ph-fill ph-gift" style="font-size:28px;color:var(--red-500)"></i><h3 style="font-family:var(--font-display);font-weight:800;font-size:17px;margin:10px 0 4px;color:var(--text-strong)">Төрсөн өдрийн бэлэг</h3><p style="font-size:13px;color:var(--text-body);margin:0">Амьтны төрсөн өдрөөр бэлэг.</p></div>
+        <div style="background:var(--surface-card);border:2.5px solid var(--line-ink);border-radius:var(--radius-md);padding:20px;box-shadow:var(--shadow-hard-sm)"><i class="ph-fill ph-truck" style="font-size:28px;color:var(--green-500)"></i><h3 style="font-family:var(--font-display);font-weight:800;font-size:17px;margin:10px 0 4px;color:var(--text-strong)">Үнэгүй хүргэлт</h3><p style="font-size:13px;color:var(--text-body);margin:0">Платинум гишүүдэд үргэлж үнэгүй.</p></div>
+      </div>
+      <div style="margin-top:20px;background:var(--marigold-200);border:2.5px dashed var(--line-ink);border-radius:var(--radius-md);padding:20px"><h3 style="font-family:var(--font-display);font-weight:800;font-size:18px;margin:0 0 10px;color:var(--ink-900)">Хэрхэн оноо цуглуулах вэ?</h3><div style="display:flex;gap:20px;flex-wrap:wrap;font-size:14px;color:var(--ink-900)"><span><b>₮1,000</b> = 1 оноо</span><span><i class="ph-fill ph-star" style="color:var(--marigold-600)"></i> Үнэлгээ = 20 оноо</span><span><i class="ph-fill ph-user-plus"></i> Найз урих = 100 оноо</span></div></div>
+    </section>
+  </sc-if>
+
+  <!-- ============ ADMIN DASHBOARD ============ -->
+  <sc-if value="{{ isAdmin }}">
+    <div class="nx-admin-shell" style="display:flex;min-height:100vh;background:var(--surface-page)">
+
+      <!-- ===== SIDEBAR ===== -->
+      <aside class="nx-admin-aside" style="width:248px;flex:none;background:var(--ink-900);border-right:4px solid var(--line-ink);display:flex;flex-direction:column;position:sticky;top:0;height:100vh">
+        <div style="display:flex;align-items:center;gap:10px;padding:22px 20px 18px;border-bottom:1px solid var(--ink-700)">
+          <img src="ds/assets/logo-mark-cobalt.svg" width="38" height="38" alt="">
+          <div>
+            <div style="font-family:var(--font-display);font-weight:800;font-size:19px;color:var(--paper-0);line-height:1">{{ storeName }}</div>
+            <div style="font-family:var(--font-mono);font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--marigold-500);margin-top:3px">Admin · Удирдлага</div>
+          </div>
+        </div>
+        <nav style="flex:1;display:flex;flex-direction:column;gap:6px;padding:16px 14px;overflow-y:auto">
+          <sc-for list="{{ adminNav }}" as="n" hint-placeholder-count="5">
+            <div onClick="{{ n.go }}" style="{{ n.style }}">
+              <i class="ph-fill ph-{{ n.icon }}" style="font-size:20px"></i>
+              <span class="nx-asidelabel" style="flex:1">{{ n.label }}</span>
+              <sc-if value="{{ n.hasBadge }}"><span style="font-family:var(--font-mono);font-size:11px;font-weight:700;background:var(--red-500);color:#fff;border:2px solid var(--line-ink);border-radius:999px;min-width:20px;height:20px;display:flex;align-items:center;justify-content:center;padding:0 5px">{{ n.badge }}</span></sc-if>
+            </div>
+          </sc-for>
+        </nav>
+        <div style="padding:14px;border-top:1px solid var(--ink-700);display:flex;flex-direction:column;gap:12px">
+          <div style="display:flex;align-items:center;gap:10px">
+            <div style="width:38px;height:38px;flex:none;border-radius:999px;border:2.5px solid var(--paper-0);background:var(--marigold-500);display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-weight:800;color:var(--ink-900)">Б</div>
+            <div class="nx-asidelabel" style="min-width:0"><div style="font-size:13px;font-weight:700;color:var(--paper-0);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">Болормаа Б.</div><div style="font-family:var(--font-mono);font-size:10px;color:var(--ink-300)">Супер админ</div></div>
+          </div>
+          <button class="nx-press" onClick="{{ goHome }}" style="display:flex;align-items:center;justify-content:center;gap:8px;height:42px;border:2.5px solid var(--paper-0);border-radius:12px;background:transparent;color:var(--paper-0);cursor:pointer;font-family:var(--font-body);font-weight:700;font-size:13.5px"><i class="ph-bold ph-storefront"></i> <span class="nx-asidelabel">Дэлгүүр рүү</span></button>
+        </div>
+      </aside>
+
+      <!-- ===== MAIN ===== -->
+      <main style="flex:1;min-width:0;display:flex;flex-direction:column">
+        <!-- topbar -->
+        <header style="position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:16px;padding:16px 28px;background:var(--surface-page);border-bottom:2.5px solid var(--line-ink)">
+          <h1 style="font-family:var(--font-display);font-weight:800;font-size:24px;margin:0;color:var(--text-strong);flex:none">{{ adminTabTitle }}</h1>
+          <div class="nx-search" style="flex:1;max-width:420px;position:relative;display:flex;align-items:center;margin:0 auto 0 8px">
+            <i class="ph ph-magnifying-glass" style="position:absolute;left:14px;font-size:18px;color:var(--text-muted)"></i>
+            <input placeholder="Хайх…" style="width:100%;height:42px;padding:0 14px 0 40px;font-family:var(--font-body);font-size:14px;border:2.5px solid var(--line-ink);border-radius:999px;background:var(--surface-card);box-shadow:var(--shadow-hard-sm)">
+          </div>
+          <div style="display:flex;align-items:center;gap:10px;background:var(--ink-900);border:2.5px solid var(--line-ink);border-radius:999px;padding:8px 14px;box-shadow:var(--shadow-hard-sm);flex:none">
+            <span style="width:10px;height:10px;border-radius:999px;background:var(--green-500);box-shadow:0 0 0 4px rgba(47,148,87,.3)"></span>
+            <span style="font-family:var(--font-mono);font-size:12.5px;font-weight:700;color:var(--paper-0)">{{ adminLiveNow }} онлайн</span>
+          </div>
+        </header>
+
+        <div style="padding:24px 28px 48px">
+
+          <!-- ============ OVERVIEW ============ -->
+          <sc-if value="{{ isOverview }}">
+            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;margin-bottom:18px">
+              <sc-for list="{{ adminKpis }}" as="k" hint-placeholder-count="4">
+                <div style="background:var(--surface-card);border:2.5px solid var(--line-ink);border-radius:var(--radius-md);padding:20px;box-shadow:var(--shadow-hard)">
+                  <div style="display:flex;align-items:center;justify-content:space-between">
+                    <div style="width:44px;height:44px;border:2.5px solid var(--line-ink);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px;color:var(--paper-0);background:{{ k.accent }}"><i class="ph-fill ph-{{ k.icon }}"></i></div>
+                    <span style="{{ k.deltaStyle }}"><i class="ph-bold ph-{{ k.arrow }}"></i> {{ k.delta }}</span>
+                  </div>
+                  <div style="font-family:var(--font-mono);font-weight:700;font-size:30px;line-height:1.05;margin-top:14px;color:var(--text-strong)">{{ k.value }}</div>
+                  <div style="font-size:13px;color:var(--text-muted);margin-top:2px">{{ k.label }}</div>
+                </div>
+              </sc-for>
+            </div>
+
+            <div class="nx-admin-row" style="display:grid;grid-template-columns:1.5fr 1fr;gap:16px;margin-bottom:18px">
+              <div style="background:var(--surface-card);border:2.5px solid var(--line-ink);border-radius:var(--radius-md);padding:22px;box-shadow:var(--shadow-hard-sm)">
+                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px"><h3 style="font-family:var(--font-display);font-weight:800;font-size:18px;margin:0;color:var(--text-strong)">7 хоногийн зочид</h3><span style="font-family:var(--font-mono);font-size:12px;color:var(--text-muted)">өдөр тутам</span></div>
+                <div style="display:flex;align-items:flex-end;gap:10px;height:180px">
+                  <sc-for list="{{ weekBars }}" as="b" hint-placeholder-count="7">
+                    <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:8px;height:100%;justify-content:flex-end">
+                      <span style="font-family:var(--font-mono);font-size:11px;font-weight:700;color:var(--text-body)">{{ b.v }}</span>
+                      <div style="{{ b.barStyle }}"></div>
+                      <span style="font-family:var(--font-mono);font-size:12px;color:var(--text-muted)">{{ b.d }}</span>
+                    </div>
+                  </sc-for>
+                </div>
+              </div>
+              <div style="background:var(--surface-card);border:2.5px solid var(--line-ink);border-radius:var(--radius-md);padding:22px;box-shadow:var(--shadow-hard-sm)">
+                <h3 style="font-family:var(--font-display);font-weight:800;font-size:18px;margin:0 0 18px;color:var(--text-strong)">Зочдын суваг</h3>
+                <div style="display:flex;flex-direction:column;gap:14px">
+                  <sc-for list="{{ sources }}" as="s" hint-placeholder-count="5">
+                    <div>
+                      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px"><span style="display:flex;align-items:center;gap:7px;font-size:14px;font-weight:700;color:var(--text-strong)"><i class="ph-fill ph-{{ s.icon }}" style="color:{{ s.color }}"></i> {{ s.label }}</span><span style="font-family:var(--font-mono);font-size:13px;font-weight:700;color:var(--text-body)">{{ s.pctLabel }}</span></div>
+                      <div style="height:12px;background:var(--paper-100);border:2px solid var(--line-ink);border-radius:999px;overflow:hidden"><div style="{{ s.barStyle }};height:100%"></div></div>
+                    </div>
+                  </sc-for>
+                </div>
+              </div>
+            </div>
+
+            <div class="nx-admin-row" style="display:grid;grid-template-columns:1.5fr 1fr;gap:16px">
+              <div style="background:var(--surface-card);border:2.5px solid var(--line-ink);border-radius:var(--radius-md);box-shadow:var(--shadow-hard-sm);overflow:hidden">
+                <div style="display:flex;align-items:center;justify-content:space-between;padding:18px 22px;border-bottom:2.5px solid var(--line-ink)"><h3 style="font-family:var(--font-display);font-weight:800;font-size:18px;margin:0;color:var(--text-strong)">Хамгийн их үзсэн бараа</h3><span style="font-family:var(--font-mono);font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--text-muted)">үзэлт · сагс · хөрвөлт</span></div>
+                <div>
+                  <sc-for list="{{ topProducts }}" as="r" hint-placeholder-count="6">
+                    <div style="display:flex;align-items:center;gap:14px;padding:14px 22px;border-bottom:1px solid var(--line-soft)">
+                      <span style="font-family:var(--font-mono);font-weight:700;font-size:15px;color:var(--text-muted);width:18px">{{ r.rank }}</span>
+                      <div class="grain" style="width:44px;height:44px;flex:none;border:2.5px solid var(--line-ink);border-radius:var(--radius-sm);background:var(--paper-100);display:flex;align-items:center;justify-content:center"><i class="ph-fill ph-{{ r.icon }}" style="font-size:22px;color:var(--ink-300)"></i></div>
+                      <div style="flex:1;min-width:0">
+                        <div style="font-weight:700;font-size:14px;color:var(--text-strong);line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ r.name }}</div>
+                        <div style="height:7px;background:var(--paper-100);border:1.5px solid var(--line-ink);border-radius:999px;overflow:hidden;margin-top:6px;max-width:220px"><div style="{{ r.barStyle }};height:100%;background:var(--cobalt-600)"></div></div>
+                      </div>
+                      <div style="display:flex;gap:18px;font-family:var(--font-mono);font-size:13px;text-align:right">
+                        <span style="font-weight:700;color:var(--text-strong);min-width:44px">{{ r.views }}</span>
+                        <span style="color:var(--text-body);min-width:36px">{{ r.atc }}</span>
+                        <span style="font-weight:700;color:var(--green-500);min-width:44px">{{ r.conv }}</span>
+                      </div>
+                    </div>
+                  </sc-for>
+                </div>
+              </div>
+              <div style="background:var(--surface-card);border:2.5px solid var(--line-ink);border-radius:var(--radius-md);box-shadow:var(--shadow-hard-sm);overflow:hidden">
+                <div style="display:flex;align-items:center;gap:8px;padding:18px 22px;border-bottom:2.5px solid var(--line-ink)"><span style="width:9px;height:9px;border-radius:999px;background:var(--red-500)"></span><h3 style="font-family:var(--font-display);font-weight:800;font-size:18px;margin:0;color:var(--text-strong)">Шууд урсгал</h3></div>
+                <div style="display:flex;flex-direction:column">
+                  <sc-for list="{{ adminFeed }}" as="e" hint-placeholder-count="5">
+                    <div style="display:flex;align-items:center;gap:12px;padding:14px 22px;border-bottom:1px solid var(--line-soft)">
+                      <div style="width:36px;height:36px;flex:none;border:2px solid var(--line-ink);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:17px;color:var(--paper-0);background:{{ e.tint }}"><i class="ph-fill ph-{{ e.icon }}"></i></div>
+                      <span style="flex:1;font-size:13.5px;color:var(--text-body);line-height:1.3">{{ e.text }}</span>
+                      <span style="font-family:var(--font-mono);font-size:11px;color:var(--text-muted);white-space:nowrap">{{ e.time }}</span>
+                    </div>
+                  </sc-for>
+                </div>
+              </div>
+            </div>
+          </sc-if>
+
+          <!-- ============ ORDERS ============ -->
+          <sc-if value="{{ isOrdersTab }}">
+            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px;margin-bottom:20px">
+              <div style="background:var(--cobalt-600);border:2.5px solid var(--line-ink);border-radius:var(--radius-md);padding:18px 20px;box-shadow:var(--shadow-hard);color:var(--paper-0)"><div style="font-family:var(--font-mono);font-weight:700;font-size:30px">{{ adminOrdersOpen }}</div><div style="font-size:13px;opacity:.9">Хүлээгдэж буй захиалга</div></div>
+              <div style="background:var(--surface-card);border:2.5px solid var(--line-ink);border-radius:var(--radius-md);padding:18px 20px;box-shadow:var(--shadow-hard-sm)"><div style="font-family:var(--font-mono);font-weight:700;font-size:30px;color:var(--text-strong)">{{ adminOrdersToday }}</div><div style="font-size:13px;color:var(--text-muted)">Өнөөдрийн захиалга</div></div>
+              <div style="background:var(--surface-card);border:2.5px solid var(--line-ink);border-radius:var(--radius-md);padding:18px 20px;box-shadow:var(--shadow-hard-sm)"><div style="font-family:var(--font-mono);font-weight:700;font-size:30px;color:var(--green-500)">98.2%</div><div style="font-size:13px;color:var(--text-muted)">Амжилттай хүргэлт</div></div>
+            </div>
+            <div style="background:var(--surface-card);border:2.5px solid var(--line-ink);border-radius:var(--radius-md);box-shadow:var(--shadow-hard-sm);overflow:hidden">
+              <div class="nx-thead" style="display:grid;grid-template-columns:1.1fr 1.3fr 1fr .8fr 1fr 1.2fr;gap:12px;padding:14px 22px;border-bottom:2.5px solid var(--line-ink);background:var(--paper-100);font-family:var(--font-mono);font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--text-muted)">
+                <span>Дугаар</span><span>Үйлчлүүлэгч</span><span>Огноо</span><span>Тоо</span><span>Дүн</span><span>Төлөв</span>
+              </div>
+              <sc-for list="{{ adminOrders }}" as="o" hint-placeholder-count="6">
+                <div class="nx-trow" style="display:grid;grid-template-columns:1.1fr 1.3fr 1fr .8fr 1fr 1.2fr;gap:12px;align-items:center;padding:15px 22px;border-bottom:1px solid var(--line-soft)">
+                  <span style="font-family:var(--font-mono);font-weight:700;font-size:13.5px;color:var(--cobalt-600)">{{ o.no }}</span>
+                  <span style="font-weight:700;font-size:14px;color:var(--text-strong)">{{ o.cust }}</span>
+                  <span style="font-family:var(--font-mono);font-size:13px;color:var(--text-body)">{{ o.date }}</span>
+                  <span style="font-size:13px;color:var(--text-body)">{{ o.items }}</span>
+                  <span style="font-family:var(--font-mono);font-weight:700;font-size:14px;color:var(--text-strong)">{{ o.total }}</span>
+                  <span><span style="{{ o.statusStyle }}">{{ o.statusLabel }}</span></span>
+                </div>
+              </sc-for>
+            </div>
+          </sc-if>
+
+          <!-- ============ PRODUCTS ============ -->
+          <sc-if value="{{ isProductsTab }}">
+            <div style="display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:20px">
+              <div style="display:flex;gap:16px;flex-wrap:wrap">
+                <div style="background:var(--surface-card);border:2.5px solid var(--line-ink);border-radius:var(--radius-md);padding:16px 20px;box-shadow:var(--shadow-hard-sm)"><div style="font-family:var(--font-mono);font-weight:700;font-size:24px;color:var(--text-strong)">{{ adminProductCount }}</div><div style="font-size:12.5px;color:var(--text-muted)">Нийт бараа</div></div>
+                <div style="background:var(--marigold-200);border:2.5px solid var(--line-ink);border-radius:var(--radius-md);padding:16px 20px;box-shadow:var(--shadow-hard-sm)"><div style="font-family:var(--font-mono);font-weight:700;font-size:24px;color:var(--ink-900)">{{ adminLowStock }}</div><div style="font-size:12.5px;color:var(--ink-900)">Нөөц анхааруулга</div></div>
+                <div style="background:var(--surface-card);border:2.5px solid var(--line-ink);border-radius:var(--radius-md);padding:16px 20px;box-shadow:var(--shadow-hard-sm)"><div style="font-family:var(--font-mono);font-weight:700;font-size:24px;color:var(--text-strong)">{{ adminInventoryValue }}</div><div style="font-size:12.5px;color:var(--text-muted)">Нөөцийн үнэ цэн</div></div>
+              </div>
+              <button class="nx-press" style="height:46px;padding:0 20px;display:inline-flex;align-items:center;gap:8px;font-weight:700;font-size:15px;border:2.5px solid var(--line-ink);border-radius:999px;background:var(--cobalt-600);color:var(--paper-0);cursor:pointer;box-shadow:var(--shadow-hard)"><i class="ph-bold ph-plus"></i> Шинэ бараа</button>
+            </div>
+            <div style="background:var(--surface-card);border:2.5px solid var(--line-ink);border-radius:var(--radius-md);box-shadow:var(--shadow-hard-sm);overflow:hidden">
+              <div class="nx-thead" style="display:grid;grid-template-columns:2.4fr 1fr .8fr .8fr 1.1fr 44px;gap:12px;padding:14px 22px;border-bottom:2.5px solid var(--line-ink);background:var(--paper-100);font-family:var(--font-mono);font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--text-muted)">
+                <span>Бараа</span><span>Үнэ</span><span>Нөөц</span><span>Үзэлт</span><span>Төлөв</span><span></span>
+              </div>
+              <sc-for list="{{ adminProducts }}" as="p" hint-placeholder-count="8">
+                <div class="nx-trow" style="display:grid;grid-template-columns:2.4fr 1fr .8fr .8fr 1.1fr 44px;gap:12px;align-items:center;padding:13px 22px;border-bottom:1px solid var(--line-soft)">
+                  <div style="display:flex;align-items:center;gap:12px;min-width:0">
+                    <div class="grain" style="width:42px;height:42px;flex:none;border:2.5px solid var(--line-ink);border-radius:var(--radius-sm);background:var(--paper-100);display:flex;align-items:center;justify-content:center"><i class="ph-fill ph-{{ p.icon }}" style="font-size:21px;color:var(--ink-300)"></i></div>
+                    <div style="min-width:0"><div style="font-weight:700;font-size:13.5px;color:var(--text-strong);line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ p.name }}</div><div style="font-family:var(--font-mono);font-size:11px;color:var(--text-muted);margin-top:2px">{{ p.cat }}</div></div>
+                  </div>
+                  <span style="font-family:var(--font-mono);font-weight:700;font-size:13.5px;color:var(--text-strong)">{{ p.price }}</span>
+                  <span style="{{ p.stockStyle }}">{{ p.stock }}</span>
+                  <span style="font-family:var(--font-mono);font-size:13px;color:var(--text-body)">{{ p.views }}</span>
+                  <span><span style="{{ p.statusStyle }}">{{ p.statusLabel }}</span></span>
+                  <button class="nx-icbtn" aria-label="Засах" style="width:36px;height:36px;border:2.5px solid var(--line-ink);border-radius:10px;background:var(--surface-page);cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;color:var(--ink-900)"><i class="ph-bold ph-pencil-simple"></i></button>
+                </div>
+              </sc-for>
+            </div>
+          </sc-if>
+
+          <!-- ============ CUSTOMERS ============ -->
+          <sc-if value="{{ isCustomersTab }}">
+            <div style="display:flex;gap:16px;flex-wrap:wrap;margin-bottom:20px">
+              <div style="background:var(--surface-card);border:2.5px solid var(--line-ink);border-radius:var(--radius-md);padding:16px 20px;box-shadow:var(--shadow-hard-sm)"><div style="font-family:var(--font-mono);font-weight:700;font-size:24px;color:var(--text-strong)">{{ adminCustomerCount }}</div><div style="font-size:12.5px;color:var(--text-muted)">Идэвхтэй үйлчлүүлэгч</div></div>
+              <div style="background:var(--surface-card);border:2.5px solid var(--line-ink);border-radius:var(--radius-md);padding:16px 20px;box-shadow:var(--shadow-hard-sm)"><div style="font-family:var(--font-mono);font-weight:700;font-size:24px;color:var(--green-500)">+6</div><div style="font-size:12.5px;color:var(--text-muted)">Энэ сард шинээр</div></div>
+              <div style="background:var(--surface-card);border:2.5px solid var(--line-ink);border-radius:var(--radius-md);padding:16px 20px;box-shadow:var(--shadow-hard-sm)"><div style="font-family:var(--font-mono);font-weight:700;font-size:24px;color:var(--text-strong)">₮ 663 000</div><div style="font-size:12.5px;color:var(--text-muted)">Дундаж худалдан авалт</div></div>
+            </div>
+            <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:16px">
+              <sc-for list="{{ adminCustomers }}" as="c" hint-placeholder-count="6">
+                <div class="nx-lift" style="background:var(--surface-card);border:2.5px solid var(--line-ink);border-radius:var(--radius-md);box-shadow:var(--shadow-hard-sm);padding:18px">
+                  <div style="display:flex;align-items:center;gap:12px">
+                    <div style="width:48px;height:48px;flex:none;border-radius:999px;border:2.5px solid var(--line-ink);background:var(--cobalt-600);display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-weight:800;font-size:20px;color:var(--paper-0)">{{ c.initial }}</div>
+                    <div style="flex:1;min-width:0"><div style="font-weight:700;font-size:15px;color:var(--text-strong)">{{ c.name }}</div><div style="font-family:var(--font-mono);font-size:12px;color:var(--text-muted)">{{ c.phone }}</div></div>
+                    <span style="{{ c.tierStyle }}">{{ c.tier }}</span>
+                  </div>
+                  <div style="display:flex;gap:8px;margin-top:16px">
+                    <div style="flex:1;background:var(--paper-100);border:2px solid var(--line-ink);border-radius:10px;padding:10px;text-align:center"><div style="font-family:var(--font-mono);font-weight:700;font-size:17px;color:var(--text-strong)">{{ c.orders }}</div><div style="font-size:11px;color:var(--text-muted)">Захиалга</div></div>
+                    <div style="flex:1.4;background:var(--paper-100);border:2px solid var(--line-ink);border-radius:10px;padding:10px;text-align:center"><div style="font-family:var(--font-mono);font-weight:700;font-size:17px;color:var(--text-strong)">{{ c.spent }}</div><div style="font-size:11px;color:var(--text-muted)">Нийт зарцуулсан</div></div>
+                  </div>
+                  <div style="margin-top:12px;font-family:var(--font-mono);font-size:11.5px;color:var(--text-muted);display:flex;align-items:center;gap:6px"><i class="ph-fill ph-calendar-blank"></i> {{ c.joined }}-аас гишүүн</div>
+                </div>
+              </sc-for>
+            </div>
+          </sc-if>
+
+          <!-- ============ SETTINGS ============ -->
+          <sc-if value="{{ isSettingsTab }}">
+            <div style="max-width:720px;display:flex;flex-direction:column;gap:18px">
+              <div style="background:var(--surface-card);border:2.5px solid var(--line-ink);border-radius:var(--radius-md);box-shadow:var(--shadow-hard-sm);padding:24px">
+                <h3 style="font-family:var(--font-display);font-weight:800;font-size:19px;margin:0 0 4px;color:var(--text-strong)">Дэлгүүрийн мэдээлэл</h3>
+                <p style="font-size:13.5px;color:var(--text-muted);margin:0 0 20px">Үйлчлүүлэгчдэд харагдах ерөнхий мэдээлэл.</p>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+                  <label style="display:flex;flex-direction:column;gap:6px"><span style="font-size:13px;font-weight:700;color:var(--text-strong)">Дэлгүүрийн нэр</span><input value="Нөхөр" style="height:44px;padding:0 14px;border:2.5px solid var(--line-ink);border-radius:12px;background:var(--surface-page);font-family:var(--font-body);font-size:14px;font-weight:600"></label>
+                  <label style="display:flex;flex-direction:column;gap:6px"><span style="font-size:13px;font-weight:700;color:var(--text-strong)">Утас</span><input value="7700-1234" style="height:44px;padding:0 14px;border:2.5px solid var(--line-ink);border-radius:12px;background:var(--surface-page);font-family:var(--font-mono);font-size:14px"></label>
+                  <label style="display:flex;flex-direction:column;gap:6px;grid-column:1/-1"><span style="font-size:13px;font-weight:700;color:var(--text-strong)">Хаяг</span><input value="Улаанбаатар, Сүхбаатар дүүрэг, 1-р хороо" style="height:44px;padding:0 14px;border:2.5px solid var(--line-ink);border-radius:12px;background:var(--surface-page);font-family:var(--font-body);font-size:14px"></label>
+                </div>
+              </div>
+              <div style="background:var(--surface-card);border:2.5px solid var(--line-ink);border-radius:var(--radius-md);box-shadow:var(--shadow-hard-sm);padding:24px">
+                <h3 style="font-family:var(--font-display);font-weight:800;font-size:19px;margin:0 0 4px;color:var(--text-strong)">Хүргэлт ба төлбөр</h3>
+                <p style="font-size:13.5px;color:var(--text-muted);margin:0 0 20px">Хүргэлтийн нөхцөл ба үнэгүй хүргэлтийн босго.</p>
+                <div style="display:flex;flex-direction:column;gap:14px">
+                  <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 16px;border:2px solid var(--line-ink);border-radius:12px;background:var(--paper-100)"><div><div style="font-weight:700;font-size:14px;color:var(--text-strong)">Үнэгүй хүргэлтийн босго</div><div style="font-size:12.5px;color:var(--text-muted)">Энэ дүнгээс дээш захиалгад үнэгүй</div></div><span style="font-family:var(--font-mono);font-weight:700;font-size:15px;color:var(--text-strong)">₮ 100 000</span></div>
+                  <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 16px;border:2px solid var(--line-ink);border-radius:12px;background:var(--paper-100)"><div><div style="font-weight:700;font-size:14px;color:var(--text-strong)">Стандарт хүргэлт</div><div style="font-size:12.5px;color:var(--text-muted)">Улаанбаатар хотод 24 цаг</div></div><span style="font-family:var(--font-mono);font-weight:700;font-size:15px;color:var(--text-strong)">₮ 5 900</span></div>
+                  <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 16px;border:2px solid var(--line-ink);border-radius:12px;background:var(--paper-100)"><div><div style="font-weight:700;font-size:14px;color:var(--text-strong)">QPay төлбөр</div><div style="font-size:12.5px;color:var(--text-muted)">QR кодоор төлөх боломж</div></div><span style="display:inline-flex;align-items:center;gap:6px;font-family:var(--font-mono);font-size:12.5px;font-weight:700;color:var(--green-500)"><i class="ph-fill ph-check-circle"></i> Идэвхтэй</span></div>
+                </div>
+              </div>
+              <div style="display:flex;gap:12px">
+                <button class="nx-press" style="height:48px;padding:0 24px;display:inline-flex;align-items:center;gap:8px;font-weight:700;font-size:15px;border:2.5px solid var(--line-ink);border-radius:999px;background:var(--cobalt-600);color:var(--paper-0);cursor:pointer;box-shadow:var(--shadow-hard)"><i class="ph-bold ph-floppy-disk"></i> Хадгалах</button>
+                <button class="nx-press" style="height:48px;padding:0 24px;display:inline-flex;align-items:center;font-weight:700;font-size:15px;border:2.5px solid var(--line-ink);border-radius:999px;background:var(--surface-card);color:var(--text-strong);cursor:pointer;box-shadow:var(--shadow-hard-sm)">Цуцлах</button>
+              </div>
+            </div>
+          </sc-if>
+
+        </div>
+      </main>
+    </div>
+  </sc-if>
+
+  <!-- ============ 404 ============ -->
+  <sc-if value="{{ isNotFound }}">
+    <section class="nx-section-pad" style="max-width:640px;margin:48px auto;padding:0 24px;text-align:center">
+      <div style="font-family:var(--font-display);font-style:italic;font-weight:900;font-size:88px;color:transparent;-webkit-text-stroke:3px var(--cobalt-600);transform:rotate(-6deg)">МЯУ?!</div>
+      <i class="ph-fill ph-cat" style="font-size:90px;color:var(--ink-300);margin:6px 0"></i>
+      <h1 style="font-family:var(--font-display);font-weight:900;font-size:40px;margin:8px 0 8px;color:var(--text-strong)">404 — Хуудас олдсонгүй</h1>
+      <p style="font-size:16px;color:var(--text-body);margin:0 0 24px">Энэ хуудас муурны хойноос гүйж зугтсан бололтой. Нүүр рүүгээ буцъя.</p>
+      <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
+        <button class="nx-press" onClick="{{ goHome }}" style="height:52px;padding:0 26px;display:inline-flex;align-items:center;gap:8px;font-weight:700;font-size:16px;border:2.5px solid var(--line-ink);border-radius:999px;background:var(--cobalt-600);color:var(--paper-0);cursor:pointer;box-shadow:var(--shadow-hard)"><i class="ph-bold ph-house"></i> Нүүр хуудас</button>
+        <button class="nx-press" onClick="{{ goListAll }}" style="height:52px;padding:0 26px;display:inline-flex;align-items:center;gap:8px;font-weight:700;font-size:16px;border:2.5px solid var(--line-ink);border-radius:999px;background:var(--surface-card);color:var(--text-strong);cursor:pointer;box-shadow:var(--shadow-hard)">Дэлгүүр үзэх</button>
+      </div>
+    </section>
+  </sc-if>
+
+  <!-- ============ FOOTER ============ -->
+  <sc-if value="{{ notAdmin }}">
+  <footer class="grain" style="background:var(--ink-900);color:var(--paper-200);border-top:4px solid var(--line-ink);margin-top:60px">
+    <div class="nx-footer-grid nx-section-pad" style="max-width:1200px;margin:0 auto;padding:52px 24px 32px;display:grid;grid-template-columns:1.6fr 1fr 1fr 1fr 1.4fr;gap:28px">
+      <div>
+        <div class="nx-link" onClick="{{ goHome }}" style="display:flex;align-items:center;gap:10px"><img src="ds/assets/logo-mark-cobalt.svg" width="44" height="44" alt=""><span style="font-family:var(--font-display);font-weight:800;font-size:26px;color:var(--paper-0)">{{ storeName }}</span></div>
+        <p style="font-size:14px;line-height:1.5;color:var(--ink-300);margin:14px 0 16px">Чиний хамгийн сайн нөхөр.<br>Улаанбаатарын амьтны дэлгүүр.</p>
+        <div style="display:flex;gap:14px;font-size:24px;color:var(--marigold-500)"><i class="ph-fill ph-instagram-logo"></i><i class="ph-fill ph-facebook-logo"></i><i class="ph-fill ph-tiktok-logo"></i></div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <h4 style="font-family:var(--font-mono);font-size:12px;text-transform:uppercase;letter-spacing:.12em;color:var(--marigold-500);margin:0 0 4px">Дэлгүүр</h4>
+        <span class="nx-link" onClick="{{ goListCat }}" style="font-size:14px;color:var(--paper-200)">Муур</span><span class="nx-link" onClick="{{ goListDog }}" style="font-size:14px;color:var(--paper-200)">Нохой</span><span class="nx-link" onClick="{{ goListAll }}" style="font-size:14px;color:var(--paper-200)">Бүх бараа</span><span class="nx-link" onClick="{{ goSale }}" style="font-size:14px;color:var(--paper-200)">Хямдрал</span>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <h4 style="font-family:var(--font-mono);font-size:12px;text-transform:uppercase;letter-spacing:.12em;color:var(--marigold-500);margin:0 0 4px">Тусламж</h4>
+        <span class="nx-link" onClick="{{ goFaq }}" style="font-size:14px;color:var(--paper-200)">Хүргэлт</span><span class="nx-link" onClick="{{ goFaq }}" style="font-size:14px;color:var(--paper-200)">Буцаалт</span><span class="nx-link" onClick="{{ goFaq }}" style="font-size:14px;color:var(--paper-200)">Түгээмэл асуулт</span><span class="nx-link" onClick="{{ goFaq }}" style="font-size:14px;color:var(--paper-200)">Холбоо барих</span>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <h4 style="font-family:var(--font-mono);font-size:12px;text-transform:uppercase;letter-spacing:.12em;color:var(--marigold-500);margin:0 0 4px">Нөхөр</h4>
+        <span class="nx-link" onClick="{{ goAbout }}" style="font-size:14px;color:var(--paper-200)">Бидний тухай</span><span class="nx-link" onClick="{{ goLoyalty }}" style="font-size:14px;color:var(--paper-200)">Урамшуулал</span><span class="nx-link" onClick="{{ goAccount }}" style="font-size:14px;color:var(--paper-200)">Миний профайл</span><span class="nx-link" onClick="{{ goNotFound }}" style="font-size:14px;color:var(--paper-200)">Карьер</span>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <h4 style="font-family:var(--font-mono);font-size:12px;text-transform:uppercase;letter-spacing:.12em;color:var(--marigold-500);margin:0 0 4px">Мэдээлэл авах</h4>
+        <p style="font-size:14px;color:var(--ink-300);margin:0">Шинэ бараа, хямдралын мэдээ.</p>
+        <div style="display:flex;gap:8px"><input placeholder="имэйл хаяг" style="flex:1;height:42px;padding:0 14px;border:2.5px solid var(--paper-0);border-radius:999px;background:transparent;color:var(--paper-0);font-family:var(--font-body);font-size:14px"><button class="nx-press" style="height:42px;padding:0 16px;border:2.5px solid var(--line-ink);border-radius:999px;background:var(--marigold-500);color:var(--ink-900);font-weight:700;cursor:pointer;box-shadow:var(--shadow-hard-sm)"><i class="ph-bold ph-paper-plane-tilt"></i></button></div>
+      </div>
+    </div>
+    <div class="nx-section-pad" style="border-top:1px solid var(--ink-700);max-width:1200px;margin:0 auto;padding:18px 24px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;font-size:12px;color:var(--ink-300)"><span>© 2026 {{ storeName }} ХХК · Улаанбаатар</span><span style="display:flex;gap:16px;align-items:center"><span class="nx-link" onClick="{{ goAdmin }}" style="font-family:var(--font-mono);color:var(--marigold-500);display:inline-flex;align-items:center;gap:5px"><i class="ph-bold ph-gauge"></i> Админ</span><span style="font-family:var(--font-mono)">МЯУ · PROW · ГАВ</span></span></div>
+  </footer>
+  </sc-if>
+
+  <!-- ============ CART DRAWER ============ -->
+  <sc-if value="{{ cartOpen }}">
+    <div onClick="{{ closeCart }}" style="position:fixed;inset:0;background:rgba(21,21,27,.45);z-index:50;animation:nx-fadein 200ms ease both">
+      <aside onClick="{{ stop }}" style="position:absolute;top:0;right:0;height:100%;width:min(420px,92vw);background:var(--surface-page);border-left:3px solid var(--line-ink);display:flex;flex-direction:column;box-shadow:var(--shadow-soft-lg);animation:nx-slidein 240ms var(--ease-out) both">
+        <header style="display:flex;align-items:center;justify-content:space-between;padding:18px 20px;border-bottom:2.5px solid var(--line-ink)">
+          <h2 style="font-family:var(--font-display);font-weight:800;font-size:22px;margin:0;display:flex;align-items:center;gap:8px"><i class="ph-fill ph-shopping-cart"></i> Сагс</h2>
+          <button class="nx-icbtn" onClick="{{ closeCart }}" aria-label="Хаах" style="width:40px;height:40px;border:2.5px solid var(--line-ink);border-radius:999px;background:var(--surface-card);cursor:pointer;font-size:18px;display:flex;align-items:center;justify-content:center"><i class="ph-bold ph-x"></i></button>
+        </header>
+        <div style="flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:12px">
+          <sc-if value="{{ cartEmpty }}">
+            <div style="text-align:center;padding:60px 20px;display:flex;flex-direction:column;gap:8px;align-items:center"><i class="ph ph-shopping-bag" style="font-size:56px;color:var(--ink-300)"></i><p style="font-weight:700;margin:0;color:var(--text-strong)">Сагс хоосон байна</p><span style="color:var(--text-muted);font-size:14px">Дуртай хоолоо нэмээрэй 🐾</span></div>
+          </sc-if>
+          <sc-for list="{{ cartItems }}" as="it" hint-placeholder-count="2">
+            <div style="display:flex;gap:12px;background:var(--surface-card);border:2.5px solid var(--line-ink);border-radius:var(--radius-md);padding:12px;box-shadow:var(--shadow-hard-sm)">
+              <div class="grain" style="width:56px;height:56px;flex:none;border:2.5px solid var(--line-ink);border-radius:var(--radius-sm);background:var(--paper-100);display:flex;align-items:center;justify-content:center"><i class="ph-fill ph-{{ it.icon }}" style="font-size:28px;color:var(--ink-300)"></i></div>
+              <div style="flex:1;min-width:0">
+                <div style="font-weight:700;font-size:14px;line-height:1.25;color:var(--text-strong)">{{ it.name }}</div>
+                <div style="font-family:var(--font-mono);font-size:13px;color:var(--text-muted);margin-top:2px">{{ it.priceFmt }}</div>
+                <div style="margin-top:8px;display:flex;align-items:center;gap:10px">
+                  <div style="display:inline-flex;align-items:center;border:2.5px solid var(--line-ink);border-radius:999px;background:var(--surface-page);overflow:hidden">
+                    <button onClick="{{ it.dec }}" aria-label="Хасах" style="width:34px;height:34px;border:0;background:none;cursor:pointer;font-size:16px"><i class="ph-bold ph-minus"></i></button>
+                    <span style="min-width:28px;text-align:center;font-family:var(--font-mono);font-weight:700;font-size:14px">{{ it.qty }}</span>
+                    <button onClick="{{ it.inc }}" aria-label="Нэмэх" style="width:34px;height:34px;border:0;background:none;cursor:pointer;font-size:16px"><i class="ph-bold ph-plus"></i></button>
+                  </div>
+                  <button onClick="{{ it.remove }}" aria-label="Устгах" style="width:38px;height:38px;border:2.5px solid var(--line-ink);border-radius:999px;background:var(--surface-card);cursor:pointer;font-size:17px;color:var(--red-500)"><i class="ph-bold ph-trash"></i></button>
+                </div>
+              </div>
+            </div>
+          </sc-for>
+        </div>
+        <sc-if value="{{ cartNotEmpty }}">
+          <footer style="border-top:2.5px solid var(--line-ink);padding:20px;display:flex;flex-direction:column;gap:8px;background:var(--surface-card)">
+            <div style="display:flex;justify-content:space-between;font-size:14px"><span>Дэд дүн</span><b style="font-family:var(--font-mono)">{{ subtotalFmt }}</b></div>
+            <div style="display:flex;justify-content:space-between;font-size:14px"><span>Хүргэлт</span><b style="font-family:var(--font-mono)">{{ shipFmt }}</b></div>
+            <div style="display:flex;justify-content:space-between;border-top:1px dashed var(--line-soft);padding-top:8px;margin-top:4px"><span style="font-weight:800">Нийт</span><b style="font-family:var(--font-mono);font-size:18px;color:var(--text-strong)">{{ totalFmt }}</b></div>
+            <button class="nx-press" onClick="{{ goCheckout }}" style="width:100%;height:54px;margin-top:6px;display:inline-flex;align-items:center;justify-content:center;gap:8px;font-weight:700;font-size:17px;border:2.5px solid var(--line-ink);border-radius:999px;background:var(--cobalt-600);color:var(--paper-0);cursor:pointer;box-shadow:var(--shadow-hard)">Захиалга баталгаажуулах <i class="ph-bold ph-arrow-right"></i></button>
+          </footer>
+        </sc-if>
+      </aside>
+    </div>
+  </sc-if>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1200,&quot;height&quot;:900},&quot;heroVariant&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;A&quot;,&quot;B&quot;,&quot;C&quot;],&quot;default&quot;:&quot;A&quot;,&quot;tsType&quot;:&quot;'A'|'B'|'C'&quot;},&quot;storeName&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;Нөхөр&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;freeShipThreshold&quot;:{&quot;editor&quot;:&quot;int&quot;,&quot;default&quot;:100000,&quot;min&quot;:0,&quot;max&quot;:300000,&quot;step&quot;:10000,&quot;tsType&quot;:&quot;number&quot;}}">
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.PRODUCTS = [
+      { id:'p1', name:'Royal Canin муурны хоол 2кг', category:'Муур · Хуурай хоол', price:48000, oldPrice:62000, rating:4.8, icon:'cat', pet:'cat', type:'food', badge:{label:'Хямдрал',variant:'sale'} },
+      { id:'p2', name:'Нохойн зөөлөн бөмбөг', category:'Нохой · Тоглоом', price:12500, rating:4.6, icon:'dog', pet:'dog', type:'toy', badge:{label:'Шинэ',variant:'new'} },
+      { id:'p3', name:'Муурны маажих байшин', category:'Муур · Тавилга', price:135000, oldPrice:160000, rating:4.7, icon:'cat', pet:'cat', type:'accessory', badge:{label:'Хямдрал',variant:'sale'} },
+      { id:'p4', name:'Нохойн оосор + хүзүүвч', category:'Нохой · Дагалдах', price:34000, rating:4.5, icon:'dog', pet:'dog', type:'accessory' },
+      { id:'p5', name:'Муурны элс 10л', category:'Муур · Эрүүл ахуй', price:22000, rating:4.8, icon:'cat', pet:'cat', type:'grooming', badge:{label:'Шинэ',variant:'new'} },
+      { id:'p6', name:'Туулайн өвс 1кг', category:'Туулай · Хоол', price:9500, rating:4.3, icon:'rabbit', pet:'rabbit', type:'food', soldOut:true },
+      { id:'p7', name:'Нохойн дулаан хүрэм', category:'Нохой · Хувцас', price:45000, rating:4.6, icon:'dog', pet:'dog', type:'clothing', badge:{label:'Шинэ',variant:'new'} },
+      { id:'p8', name:'Муурны шампунь 250мл', category:'Муур · Арчилгаа', price:18500, rating:4.4, icon:'cat', pet:'cat', type:'grooming' },
+      { id:'p9', name:'Нохойн ясан тоглоом', category:'Нохой · Тоглоом', price:15000, rating:4.5, icon:'dog', pet:'dog', type:'toy' },
+      { id:'p10', name:'Зөөлөн муурны ор', category:'Муур · Тавилга', price:78000, oldPrice:95000, rating:4.9, icon:'cat', pet:'cat', type:'accessory', badge:{label:'Бестселлер',variant:'accent'} },
+      { id:'p11', name:'Шишүүхэйн тэжээл 800г', category:'Туулай · Хоол', price:14000, rating:4.2, icon:'rabbit', pet:'rabbit', type:'food' },
+      { id:'p12', name:'Нохойн хумс хайчлуур', category:'Нохой · Арчилгаа', price:11000, rating:4.4, icon:'dog', pet:'dog', type:'grooming' },
+    ];
+    this.CATS = [
+      { id:'all', label:'Бүгд', icon:'paw-print' },
+      { id:'cat', label:'Муур', icon:'cat' },
+      { id:'dog', label:'Нохой', icon:'dog' },
+      { id:'rabbit', label:'Жижиг амьтан', icon:'rabbit' },
+      { id:'fish', label:'Загас', icon:'fish' },
+      { id:'bird', label:'Шувуу', icon:'bird' },
+    ];
+    this.TILE_COLORS = {
+      all:    { bg:'var(--ink-900)',     fg:'var(--paper-0)' },
+      cat:    { bg:'var(--cobalt-600)',  fg:'var(--paper-0)' },
+      dog:    { bg:'var(--marigold-500)',fg:'var(--ink-900)' },
+      rabbit: { bg:'var(--peach-500)',   fg:'var(--ink-900)' },
+      fish:   { bg:'var(--cobalt-200)',  fg:'var(--ink-900)' },
+      bird:   { bg:'var(--green-500)',   fg:'var(--paper-0)' },
+    };
+    this.TYPES = [
+      { id:'all', label:'Бүх төрөл' },
+      { id:'food', label:'Хоол' },
+      { id:'toy', label:'Тоглоом' },
+      { id:'accessory', label:'Дагалдах' },
+      { id:'grooming', label:'Арчилгаа' },
+      { id:'clothing', label:'Хувцас' },
+    ];
+    this.BANKS = [
+      { name:'Хаан банк', short:'Х', bg:'#0a7d3c' },
+      { name:'TDB', short:'TDB', bg:'#003a70' },
+      { name:'Голомт', short:'Г', bg:'#e2231a' },
+      { name:'Хас банк', short:'Х', bg:'#00a0af' },
+      { name:'Төрийн банк', short:'Т', bg:'#1a4f9c' },
+      { name:'SocialPay', short:'S', bg:'#0067b1' },
+      { name:'Most Money', short:'M', bg:'#6a1b9a' },
+      { name:'Ард апп', short:'A', bg:'#111418' },
+      { name:'Monpay', short:'MP', bg:'#00b894' },
+      { name:'Toki', short:'T', bg:'#ff5a5f' },
+    ];
+    this.STATUS = ['Захиалга өгсөн', 'Баталгаажсан', 'Бэлтгэж байна', 'Хүргэлтэд гарсан', 'Хүргэгдсэн'];
+    this.ORDERS = [
+      { id:'o1', no:'NX-204881', date:'2026.06.24', status:3, items:[{ id:'p1', qty:2 }, { id:'p5', qty:1 }], total:118000 },
+      { id:'o2', no:'NX-203120', date:'2026.06.18', status:4, items:[{ id:'p10', qty:1 }], total:78000 },
+      { id:'o3', no:'NX-201744', date:'2026.06.09', status:4, items:[{ id:'p2', qty:1 }, { id:'p9', qty:2 }], total:42500 },
+    ];
+    this.REVIEWS = [
+      { name:'Оюунаа Г.', rating:5, date:'2026.06.20', text:'Маш чанартай, муур маань үнэхээр дуртай байна. Нэг өдрийн дотор хүргэж өгсөн, баярлалаа!' },
+      { name:'Бат-Эрдэнэ Д.', rating:4, date:'2026.06.15', text:'Үнэ боломжийн, сав баглаа боодол сайхан. Дахин захиална.' },
+      { name:'Сараа Б.', rating:5, date:'2026.06.10', text:'QPay-ээр төлөхөд маш хялбар. Үйлчилгээ найрсаг, амьтанд ээлтэй дэлгүүр.' },
+    ];
+    this.FAQS = [
+      { q:'Хүргэлт хэр хугацаанд хийгддэг вэ?', a:'Улаанбаатар хотод 24 цагийн дотор, орон нутагт 2–4 хоногт хүргэнэ. ₮100,000-аас дээш захиалгад хүргэлт үнэгүй.' },
+      { q:'QPay-ээр хэрхэн төлөх вэ?', a:'Захиалгаа баталгаажуулаад QPay QR кодыг банкны аппаараа уншуулна, эсвэл доороос банкаа сонгож шууд төлнө.' },
+      { q:'Барааг буцаах боломжтой юу?', a:'Задлаагүй барааг 14 хоногийн дотор буцаах эсвэл солих боломжтой. Хоол, эрүүл ахуйн зарим бараанд хязгаарлалт үйлчилнэ.' },
+      { q:'Гишүүнчлэл ямар давуу талтай вэ?', a:'Худалдан авалт бүрт оноо цуглуулж, дараагийн захиалгадаа хямдрал эдэлнэ. Гишүүдэд онцгой урамшуулал зарладаг.' },
+      { q:'Захиалгаа хэрхэн хянах вэ?', a:'Профайл → Миний захиалга хэсгээс захиалгынхаа явцыг бодит цагаар хянах боломжтой.' },
+    ];
+    this.STOCK = { p1:34, p2:128, p3:9, p4:52, p5:6, p6:0, p7:21, p8:74, p9:46, p10:12, p11:88, p12:3 };
+    this.ADMIN_ORDERS = [
+      { no:'NX-204884', cust:'Энхжин Б.', date:'2026.06.27', status:0, items:3, total:64000 },
+      { no:'NX-204883', cust:'Тэмүүлэн Г.', date:'2026.06.27', status:1, items:1, total:22000 },
+      { no:'NX-204882', cust:'Сараа Б.', date:'2026.06.26', status:2, items:2, total:46500 },
+      { no:'NX-204881', cust:'Болормаа Б.', date:'2026.06.24', status:3, items:3, total:118000 },
+      { no:'NX-203120', cust:'Оюунаа Г.', date:'2026.06.18', status:4, items:1, total:78000 },
+      { no:'NX-201744', cust:'Бат-Эрдэнэ Д.', date:'2026.06.09', status:4, items:3, total:42500 },
+    ];
+    this.CUSTOMERS = [
+      { name:'Болормаа Б.', phone:'+976 9911-2233', orders:14, spent:1840000, joined:'2024.03', tier:'Алтан', pet:'cat' },
+      { name:'Оюунаа Г.', phone:'+976 8800-4521', orders:9, spent:962000, joined:'2024.07', tier:'Мөнгөн', pet:'dog' },
+      { name:'Бат-Эрдэнэ Д.', phone:'+976 9505-1180', orders:7, spent:534000, joined:'2024.11', tier:'Мөнгөн', pet:'dog' },
+      { name:'Сараа Б.', phone:'+976 9119-7744', orders:5, spent:421000, joined:'2025.01', tier:'Хүрэл', pet:'rabbit' },
+      { name:'Энхжин Б.', phone:'+976 8811-2390', orders:3, spent:198000, joined:'2025.05', tier:'Хүрэл', pet:'cat' },
+      { name:'Тэмүүлэн Г.', phone:'+976 9404-6612', orders:1, spent:22000, joined:'2026.06', tier:'Шинэ', pet:'dog' },
+    ];
+    this.qrEl = this.buildQR();
+    this.state = {
+      screen: 'home',
+      homeVariant: (props && props.heroVariant) || 'A',
+      cat: 'all', type: 'all', query: '',
+      cart: [{ id:'p1', qty:1 }, { id:'p10', qty:1 }],
+      cartOpen: false,
+      favs: { p1:true, p3:true, p10:true },
+      curId: 'p3', detailQty: 1,
+      vw: (typeof window !== 'undefined' ? window.innerWidth : 1200),
+      secsLeft: 300, paid: false, orderNo: '', selectedBank: null,
+      loggedIn: true, openFaq: 0, curOrderId: 'o1',
+      reviewItem: null, reviewRating: 5, reviewText: '', reviewedItems: {},
+      views: { p1:2840, p2:1520, p3:2210, p4:980, p5:1670, p6:540, p7:1290, p8:760, p9:1130, p10:3120, p11:430, p12:610 },
+      atc: { p1:612, p2:388, p3:402, p4:233, p5:471, p6:96, p7:268, p8:151, p9:295, p10:884, p11:71, p12:118 },
+      visitorsToday: 1640, visitorsTotal: 8940, liveNow: 42, sessionViews: 0,
+      adminTab: 'overview',
+    };
+  }
+
+  componentDidMount() {
+    this._onResize = () => this.setState({ vw: window.innerWidth });
+    window.addEventListener('resize', this._onResize);
+    this._timer = setInterval(() => {
+      if (this.state.screen === 'checkout' && !this.state.paid && this.state.secsLeft > 0) {
+        this.setState(s => ({ secsLeft: s.secsLeft - 1 }));
+      }
+    }, 1000);
+  }
+  componentWillUnmount() {
+    window.removeEventListener('resize', this._onResize);
+    clearInterval(this._timer);
+  }
+
+  buildQR() {
+    const n = 25, R = React.createElement;
+    const finder = (r, c, R0, C0) => {
+      const rr = r - R0, cc = c - C0;
+      if (rr < 0 || cc < 0 || rr > 6 || cc > 6) return null;
+      if (rr === 0 || rr === 6 || cc === 0 || cc === 6) return true;
+      if (rr >= 2 && rr <= 4 && cc >= 2 && cc <= 4) return true;
+      return false;
+    };
+    const isFinderBox = (r, c) =>
+      (r < 7 && c < 7) || (r < 7 && c > 17) || (r > 17 && c < 7);
+    let seed = 12345;
+    const rnd = () => { seed = (seed * 1103515245 + 12345) & 0x7fffffff; return (seed >> 16) & 1; };
+    const cells = [];
+    for (let r = 0; r < n; r++) {
+      for (let c = 0; c < n; c++) {
+        let on;
+        if (isFinderBox(r, c)) {
+          on = !!(finder(r, c, 0, 0) || finder(r, c, 0, 18) || finder(r, c, 18, 0));
+        } else { on = rnd() === 1; }
+        cells.push(R('div', { key: r + '-' + c, style: { background: on ? '#15151b' : 'transparent' } }));
+      }
+    }
+    return R('div', { style: { display: 'grid', gridTemplateColumns: 'repeat(25,1fr)', gridTemplateRows: 'repeat(25,1fr)', width: '100%', height: '100%' } }, cells);
+  }
+
+  fmt(n) { return '\u20ae ' + Number(n).toLocaleString('en-US').replace(/,/g, ' '); }
+  getProduct(id) { return this.PRODUCTS.find(p => p.id === id); }
+  get threshold() { return (this.props && this.props.freeShipThreshold) || 100000; }
+
+  setVariant(v) { this.setState({ homeVariant: v }); }
+  goHome() { this.setState({ screen: 'home' }); if (typeof window !== 'undefined') window.scrollTo(0, 0); }
+  goListAll() { this.setState({ screen: 'list' }); if (typeof window !== 'undefined') window.scrollTo(0, 0); }
+  goList(cat) { this.setState({ screen: 'list', cat }); if (typeof window !== 'undefined') window.scrollTo(0, 0); }
+  goBack() {
+    const s = this.state.screen;
+    if (s === 'detail') this.setState({ screen: 'list' });
+    else if (s === 'checkout') this.setState({ screen: 'home', cartOpen: true });
+    else this.setState({ screen: 'home' });
+  }
+  openProduct(p) { this.setState(s => ({ curId: p.id, screen: 'detail', detailQty: 1, views: { ...s.views, [p.id]: (s.views[p.id]||0) + 1 }, sessionViews: s.sessionViews + 1, liveNow: s.liveNow })); if (typeof window !== 'undefined') window.scrollTo(0, 0); }
+  goAdmin() { this.nav('admin'); }
+  setAdminTab(t) { this.setState({ adminTab: t }); if (typeof window !== 'undefined') window.scrollTo(0, 0); }
+  openCart() { this.setState({ cartOpen: true }); }
+  closeCart() { this.setState({ cartOpen: false }); }
+  goCheckout() { this.setState({ cartOpen: false, screen: 'checkout', secsLeft: 300 }); if (typeof window !== 'undefined') window.scrollTo(0, 0); }
+
+  addToCart(p, qty) {
+    this.setState(s => {
+      const ex = s.cart.find(i => i.id === p.id);
+      const cart = ex ? s.cart.map(i => i.id === p.id ? { ...i, qty: i.qty + qty } : i) : [...s.cart, { id: p.id, qty }];
+      return { cart, cartOpen: true };
+    });
+  }
+  setQty(id, q) { if (q < 1) return; this.setState(s => ({ cart: s.cart.map(i => i.id === id ? { ...i, qty: q } : i) })); }
+  removeItem(id) { this.setState(s => ({ cart: s.cart.filter(i => i.id !== id) })); }
+  toggleFav(id) { this.setState(s => ({ favs: { ...s.favs, [id]: !s.favs[id] } })); }
+  onSearch(e) { const q = e.target.value; this.setState(st => ({ query: q, screen: (q && st.screen === 'home') ? 'list' : st.screen })); }
+  incDetail() { this.setState(s => ({ detailQty: Math.min(10, s.detailQty + 1) })); }
+  decDetail() { this.setState(s => ({ detailQty: Math.max(1, s.detailQty - 1) })); }
+
+  payNow() {
+    const no = 'NX-' + String(Math.floor(100000 + Math.random() * 899999));
+    this.setState({ paid: true, orderNo: no });
+    if (typeof window !== 'undefined') window.scrollTo(0, 0);
+  }
+  reset() {
+    this.setState({ screen: 'home', cart: [], cartOpen: false, paid: false, secsLeft: 300, cat: 'all', type: 'all', query: '', selectedBank: null });
+    if (typeof window !== 'undefined') window.scrollTo(0, 0);
+  }
+  nav(screen) { this.setState({ screen, cartOpen: false }); if (typeof window !== 'undefined') window.scrollTo(0, 0); }
+  goAccount() { this.nav(this.state.loggedIn ? 'account' : 'auth'); }
+  goWishlist() { this.nav('wishlist'); }
+  goAuth() { this.nav('auth'); }
+  goFaq() { this.nav('faq'); }
+  goAbout() { this.nav('about'); }
+  goSale() { this.nav('sale'); }
+  goLoyalty() { this.nav('loyalty'); }
+  goNotFound() { this.nav('notfound'); }
+  openOrder(id) { this.setState({ curOrderId: id }); this.nav('order'); }
+  login() { this.setState({ loggedIn: true }); this.nav('account'); }
+  logout() { this.setState({ loggedIn: false }); this.nav('home'); }
+  toggleFaq(i) { this.setState(s => ({ openFaq: s.openFaq === i ? -1 : i })); }
+  startReview(id) { this.setState({ reviewItem: id, reviewRating: 5, reviewText: '' }); }
+  cancelReview() { this.setState({ reviewItem: null }); }
+  setReviewRating(n) { this.setState({ reviewRating: n }); }
+  onReviewText(e) { this.setState({ reviewText: e.target.value }); }
+  submitReview() { const id = this.state.reviewItem; if (!id) return; this.setState(s => ({ reviewedItems: { ...s.reviewedItems, [id]: true }, reviewItem: null })); }
+
+  badgeStyleFor(b) {
+    const map = {
+      sale:   { bg: 'var(--red-500)', fg: '#fff' },
+      new:    { bg: 'var(--cobalt-600)', fg: 'var(--paper-0)' },
+      accent: { bg: 'var(--marigold-500)', fg: 'var(--ink-900)' },
+    };
+    const c = map[b.variant] || map.new;
+    return { fontFamily: 'var(--font-mono)', fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '.06em', padding: '3px 8px', borderRadius: 6, border: '2px solid var(--line-ink)', background: c.bg, color: c.fg, boxShadow: '2px 2px 0 0 var(--ink-900)', whiteSpace: 'nowrap' };
+  }
+  heartStyleFor(fav) {
+    return { width: 36, height: 36, flex: 'none', border: '2.5px solid var(--line-ink)', borderRadius: 999, background: fav ? 'var(--marigold-500)' : 'var(--surface-card)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 16, color: 'var(--ink-900)', boxShadow: '2px 2px 0 0 var(--ink-900)' };
+  }
+  view(p) {
+    const fav = !!this.state.favs[p.id];
+    return {
+      id: p.id, name: p.name, category: p.category, icon: p.icon, rating: p.rating,
+      priceFmt: this.fmt(p.price),
+      oldPrice: !!p.oldPrice, oldPriceFmt: p.oldPrice ? this.fmt(p.oldPrice) : '',
+      badge: !!p.badge, badgeLabel: p.badge ? p.badge.label : '', badgeStyle: p.badge ? this.badgeStyleFor(p.badge) : {},
+      soldOut: !!p.soldOut,
+      heartClass: fav ? 'ph-fill ph-heart' : 'ph-bold ph-heart', heartStyle: this.heartStyleFor(fav),
+      open: () => this.openProduct(p),
+      add: (e) => { if (e) e.stopPropagation(); if (!p.soldOut) this.addToCart(p, 1); },
+      fav: (e) => { if (e) e.stopPropagation(); this.toggleFav(p.id); },
+    };
+  }
+
+  chipStyle(active, withShadow) {
+    return { display: 'inline-flex', alignItems: 'center', gap: 7, fontFamily: 'var(--font-mono)', fontSize: 13, fontWeight: 700, padding: '9px 16px', borderRadius: 999, border: '2.5px solid var(--line-ink)', background: active ? 'var(--ink-900)' : 'var(--surface-card)', color: active ? 'var(--paper-0)' : 'var(--text-strong)', cursor: 'pointer', whiteSpace: 'nowrap', boxShadow: active ? 'none' : (withShadow ? 'var(--shadow-hard-sm)' : 'none') };
+  }
+  segStyle(active, first, last) {
+    return { padding: '10px 16px', fontFamily: 'var(--font-mono)', fontSize: 12.5, fontWeight: 700, border: 0, cursor: 'pointer', background: active ? 'var(--cobalt-600)' : 'var(--surface-card)', color: active ? '#fff' : 'var(--text-strong)', borderRight: last ? 0 : '2.5px solid var(--line-ink)', whiteSpace: 'nowrap' };
+  }
+
+  renderVals() {
+    const st = this.state;
+    const storeName = (this.props && this.props.storeName) || '\u041d\u04e9\u0445\u04e9\u0440';
+    // filtered list
+    const q = st.query.trim().toLowerCase();
+    const shownRaw = this.PRODUCTS.filter(p =>
+      (st.cat === 'all' || p.pet === st.cat) &&
+      (st.type === 'all' || p.type === st.type) &&
+      (!q || (p.name + ' ' + p.category).toLowerCase().includes(q))
+    );
+    const shown = shownRaw.map(p => this.view(p));
+    const featured = this.PRODUCTS.slice(0, 8).map(p => this.view(p));
+
+    // cart
+    const cartItems = st.cart.map(ci => {
+      const p = this.getProduct(ci.id);
+      return {
+        id: p.id, name: p.name, icon: p.icon, qty: ci.qty,
+        priceFmt: this.fmt(p.price), lineFmt: this.fmt(p.price * ci.qty),
+        inc: () => this.setQty(p.id, ci.qty + 1),
+        dec: () => this.setQty(p.id, ci.qty - 1),
+        remove: () => this.removeItem(p.id),
+      };
+    });
+    const subtotal = st.cart.reduce((s, ci) => { const p = this.getProduct(ci.id); return s + p.price * ci.qty; }, 0);
+    const shipping = (subtotal > this.threshold || subtotal === 0) ? 0 : 5900;
+
+    // detail
+    const cp = this.getProduct(st.curId) || this.PRODUCTS[0];
+    const cur = {
+      ...this.view(cp),
+      desc: '\u0422\u044d\u0436\u044d\u044d\u0432\u044d\u0440 \u0430\u043c\u044c\u0442\u0430\u043d\u0434 \u0442\u0430\u043d\u044c \u0437\u043e\u0440\u0438\u0443\u043b\u0441\u0430\u043d \u0447\u0430\u043d\u0430\u0440\u0442\u0430\u0439 \u0431\u04af\u0442\u044d\u044d\u0433\u0434\u044d\u0445\u04af\u04af\u043d. \u0411\u0430\u0439\u0433\u0430\u043b\u0438\u0439\u043d \u043e\u0440\u0446, \u0442\u044d\u043d\u0446\u0432\u044d\u0440\u0442\u044d\u0439 \u0448\u0438\u043c \u0442\u044d\u0436\u044d\u044d\u043b. \u0423\u043b\u0430\u0430\u043d\u0431\u0430\u0430\u0442\u0430\u0440 \u0445\u043e\u0442\u043e\u0434 24 \u0446\u0430\u0433\u0442 \u0445\u04af\u0440\u0433\u044d\u043d\u044d.',
+      discountPct: cp.oldPrice ? Math.round((1 - cp.price / cp.oldPrice) * 100) : 0,
+    };
+    const related = this.PRODUCTS.filter(p => p.pet === cp.pet && p.id !== cp.id).slice(0, 4).map(p => this.view(p));
+
+    // category tiles + chips
+    const catTiles = this.CATS.filter(c => c.id !== 'all' && c.id !== 'fish' && c.id !== 'bird').concat(this.CATS.filter(c => c.id === 'fish')).map(c => {
+      const col = this.TILE_COLORS[c.id] || this.TILE_COLORS.all;
+      return {
+        id: c.id, label: c.label, icon: c.icon,
+        go: () => this.goList(c.id),
+        style: { display: 'flex', flexDirection: 'column', alignItems: 'flex-start', justifyContent: 'space-between', gap: 14, minHeight: 110, padding: '18px', border: '2.5px solid var(--line-ink)', borderRadius: 'var(--radius-lg)', background: col.bg, color: col.fg, cursor: 'pointer', boxShadow: 'var(--shadow-hard)', textAlign: 'left' },
+        chipStyle: { display: 'inline-flex', alignItems: 'center', gap: 8, padding: '10px 18px', border: '2.5px solid var(--line-ink)', borderRadius: 999, background: col.bg, color: col.fg, fontFamily: 'var(--font-body)', fontWeight: 700, fontSize: 15, cursor: 'pointer', boxShadow: 'var(--shadow-hard-sm)' },
+      };
+    });
+    const catChips = this.CATS.map(c => ({ id: c.id, label: c.label, icon: c.icon, pick: () => this.setState({ cat: c.id }), style: this.chipStyle(st.cat === c.id, true) }));
+    const typeChips = this.TYPES.map(t => ({ id: t.id, label: t.label, pick: () => this.setState({ type: t.id }), style: this.chipStyle(st.type === t.id, true) }));
+
+    // banks
+    const banks = this.BANKS.map((b, i) => {
+      const active = st.selectedBank === i;
+      return {
+        name: b.name, short: b.short,
+        pick: () => this.setState({ selectedBank: i }),
+        style: { display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6, padding: '12px 6px', border: '2.5px solid var(--line-ink)', borderRadius: 'var(--radius-md)', background: active ? 'var(--marigold-200)' : 'var(--surface-card)', cursor: 'pointer', boxShadow: active ? 'var(--shadow-hard)' : 'var(--shadow-hard-sm)' },
+        badgeStyle: { width: 38, height: 38, borderRadius: 10, border: '2px solid var(--line-ink)', background: b.bg, color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: 'var(--font-mono)', fontWeight: 700, fontSize: b.short.length > 1 ? 12 : 17 },
+      };
+    });
+
+    // wishlist
+    const wishlistItems = this.PRODUCTS.filter(p => st.favs[p.id]).map(p => this.view(p));
+    // orders
+    const STATUS = this.STATUS;
+    const statusBadge = (delivered) => ({ fontFamily: 'var(--font-mono)', fontSize: 12, fontWeight: 700, padding: '5px 12px', borderRadius: 999, border: '2px solid var(--line-ink)', background: delivered ? 'var(--green-500)' : 'var(--cobalt-600)', color: '#fff', whiteSpace: 'nowrap' });
+    const orders = this.ORDERS.map(o => {
+      const names = o.items.map(it => this.getProduct(it.id).name);
+      const count = o.items.reduce((s, it) => s + it.qty, 0);
+      return { id: o.id, no: o.no, date: o.date, total: this.fmt(o.total), statusLabel: STATUS[o.status], delivered: o.status >= 4, statusStyle: statusBadge(o.status >= 4), summary: names.slice(0, 2).join(', ') + (names.length > 2 ? ' …' : ''), count, icon: this.getProduct(o.items[0].id).icon, open: () => this.openOrder(o.id) };
+    });
+    const co = this.ORDERS.find(o => o.id === st.curOrderId) || this.ORDERS[0];
+    const stepIcons = ['receipt', 'seal-check', 'package', 'truck', 'house-line'];
+    const curSteps = STATUS.map((label, i) => {
+      const done = i <= co.status, active = i === co.status;
+      const dotStyle = { width: 46, height: 46, flex: 'none', borderRadius: 999, border: '2.5px solid var(--line-ink)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 20, background: active ? 'var(--marigold-500)' : (done ? 'var(--cobalt-600)' : 'var(--surface-card)'), color: active ? 'var(--ink-900)' : (done ? 'var(--paper-0)' : 'var(--ink-300)'), boxShadow: active ? 'var(--shadow-hard-sm)' : 'none' };
+      const labelStyle = { fontFamily: 'var(--font-body)', fontWeight: active ? 800 : (done ? 700 : 600), fontSize: 16, color: done ? 'var(--text-strong)' : 'var(--text-muted)' };
+      return { label, icon: stepIcons[i], done, active, sub: active ? 'Таны захиалга яг энд байна' : (done ? 'Дууссан' : 'Хүлээгдэж байна'), dotStyle, labelStyle };
+    });
+    const coDelivered = co.status >= 4;
+    const curOrder = { no: co.no, date: co.date, total: this.fmt(co.total), statusLabel: STATUS[co.status], delivered: coDelivered, statusStyle: statusBadge(coDelivered), steps: curSteps, items: co.items.map(it => {
+      const p = this.getProduct(it.id);
+      const reviewed = !!st.reviewedItems[it.id];
+      const reviewing = st.reviewItem === it.id;
+      return { name: p.name, icon: p.icon, qty: it.qty, lineFmt: this.fmt(p.price * it.qty), reviewed: coDelivered && reviewed, reviewing: coDelivered && reviewing, showBtn: coDelivered && !reviewed && !reviewing, start: () => this.startReview(it.id) };
+    }) };
+    // reviews
+    const reviews = this.REVIEWS.map(r => ({ name: r.name, date: r.date, text: r.text, initial: r.name.charAt(0), stars: [1, 2, 3, 4, 5].map(n => ({ cls: n <= r.rating ? 'ph-fill ph-star' : 'ph ph-star' })) }));
+    // sale
+    const saleItems = this.PRODUCTS.filter(p => p.oldPrice).map(p => this.view(p));
+    // faq
+    const faqs = this.FAQS.map((f, i) => ({ q: f.q, a: f.a, open: st.openFaq === i, toggle: () => this.toggleFaq(i), sign: st.openFaq === i ? 'minus' : 'plus' }));
+    // loyalty
+    const lp = 1240, lnext = 2000;
+    const loyalty = { points: lp, tier: 'Алтан гишүүн', nextLabel: (lnext - lp) + ' оноо цуглуулбал Платинум', progressStyle: { width: Math.round(lp / lnext * 100) + '%' } };
+
+    const secs = st.secsLeft;
+    const timer = String(Math.floor(secs / 60)).padStart(2, '0') + ':' + String(secs % 60).padStart(2, '0');
+    const cartCount = st.cart.reduce((s, i) => s + i.qty, 0);
+
+    // ---- ADMIN ANALYTICS ----
+    const totalViews = Object.values(st.views).reduce((a, b) => a + b, 0);
+    const totalAtc = Object.values(st.atc).reduce((a, b) => a + b, 0);
+    const ordersToday = 73, revenueToday = 4218000;
+    const convRate = (st.visitorsTotal ? (totalAtc / 28 / st.visitorsTotal * 100) : 0);
+    const adminKpis = [
+      { label: 'Өнөөдрийн зочид', value: st.visitorsToday.toLocaleString('en-US'), delta: '+12.4%', up: true, icon: 'users-three', accent: 'var(--cobalt-600)' },
+      { label: 'Нийт үзэлт', value: totalViews.toLocaleString('en-US'), delta: '+8.1%', up: true, icon: 'eye', accent: 'var(--marigold-500)' },
+      { label: 'Хөрвөлт', value: convRate.toFixed(1) + '%', delta: '+0.6%', up: true, icon: 'trend-up', accent: 'var(--green-500)' },
+      { label: 'Өнөөдрийн орлого', value: this.fmt(revenueToday), delta: '-3.2%', up: false, icon: 'wallet', accent: 'var(--red-500)' },
+    ].map(k => ({
+      ...k, arrow: k.up ? 'trend-up' : 'trend-down',
+      deltaStyle: { fontFamily: 'var(--font-mono)', fontSize: '12px', fontWeight: 700, color: k.up ? 'var(--green-500)' : 'var(--red-500)', display: 'inline-flex', alignItems: 'center', gap: '3px' },
+    }));
+    const week = [
+      { d: 'Да', v: 980 }, { d: 'Мя', v: 1120 }, { d: 'Лх', v: 1340 }, { d: 'Пү', v: 1210 },
+      { d: 'Ба', v: 1560 }, { d: 'Бя', v: 1880 }, { d: 'Ня', v: st.visitorsToday },
+    ];
+    const weekMax = Math.max(...week.map(w => w.v));
+    const weekBars = week.map(w => ({ d: w.d, v: w.v.toLocaleString('en-US'), today: w.v === st.visitorsToday, barStyle: { height: Math.round(w.v / weekMax * 100) + '%', width: '100%', background: w.v === st.visitorsToday ? 'var(--marigold-500)' : 'var(--cobalt-600)', border: '2.5px solid var(--line-ink)', borderRadius: '8px 8px 0 0', minHeight: '8px', flex: 'none' } }));
+    const topProducts = this.PRODUCTS
+      .map(p => ({ p, v: st.views[p.id] || 0, a: st.atc[p.id] || 0 }))
+      .sort((x, y) => y.v - x.v).slice(0, 6)
+      .map((r, i) => ({
+        rank: String(i + 1), name: r.p.name, icon: r.p.icon, cat: r.p.category,
+        views: r.v.toLocaleString('en-US'), atc: r.a.toLocaleString('en-US'),
+        conv: (r.v ? (r.a / r.v * 100).toFixed(1) : '0.0') + '%',
+        barStyle: { width: Math.round(r.v / (st.views.p10 || 1) * 100) + '%' },
+      }));
+    const srcRaw = [
+      { label: 'Instagram', pct: 38, icon: 'instagram-logo', color: 'var(--cobalt-600)' },
+      { label: 'Шууд', pct: 24, icon: 'cursor-click', color: 'var(--ink-900)' },
+      { label: 'Google', pct: 18, icon: 'magnifying-glass', color: 'var(--marigold-500)' },
+      { label: 'Facebook', pct: 12, icon: 'facebook-logo', color: 'var(--green-500)' },
+      { label: 'TikTok', pct: 8, icon: 'tiktok-logo', color: 'var(--red-500)' },
+    ];
+    const sources = srcRaw.map(s => ({ ...s, pctLabel: s.pct + '%', barStyle: { width: s.pct + '%', background: s.color } }));
+    const adminFeed = [
+      { icon: 'shopping-bag', tint: 'var(--cobalt-600)', text: 'Шинэ захиалга #NX-204882 · ' + this.fmt(64000), time: 'саяхан' },
+      { icon: 'eye', tint: 'var(--marigold-500)', text: '"Зөөлөн муурны ор" 3 удаа үзэгдлээ', time: '2 мин' },
+      { icon: 'user-plus', tint: 'var(--green-500)', text: 'Шинэ хэрэглэгч бүртгүүлэв', time: '5 мин' },
+      { icon: 'heart', tint: 'var(--red-500)', text: '"Royal Canin" дуртайд нэмэгдлээ', time: '8 мин' },
+      { icon: 'shopping-bag', tint: 'var(--cobalt-600)', text: 'Шинэ захиалга #NX-204881 · ' + this.fmt(118000), time: '12 мин' },
+    ];
+
+    // ---- ADMIN: nav + sections ----
+    const tab = st.adminTab;
+    const adminNav = [
+      { key: 'overview', label: 'Самбар', icon: 'gauge' },
+      { key: 'orders', label: 'Захиалга', icon: 'receipt', badge: '3' },
+      { key: 'products', label: 'Бараа', icon: 'package' },
+      { key: 'customers', label: 'Үйлчлүүлэгч', icon: 'users' },
+      { key: 'settings', label: 'Тохиргоо', icon: 'gear' },
+    ].map(n => ({
+      ...n, active: tab === n.key, hasBadge: !!n.badge, go: () => this.setAdminTab(n.key),
+      style: {
+        display: 'flex', alignItems: 'center', gap: '12px', padding: '11px 14px', borderRadius: '12px',
+        cursor: 'pointer', fontFamily: 'var(--font-body)', fontWeight: 700, fontSize: '14.5px', border: '2.5px solid transparent',
+        transition: 'transform 120ms var(--ease-out), box-shadow 120ms var(--ease-out)',
+        color: tab === n.key ? 'var(--ink-900)' : 'var(--paper-200)',
+        background: tab === n.key ? 'var(--marigold-500)' : 'transparent',
+        borderColor: tab === n.key ? 'var(--line-ink)' : 'transparent',
+        boxShadow: tab === n.key ? 'var(--shadow-hard-sm)' : 'none',
+      },
+    }));
+    const adminTabTitle = ({ overview: 'Самбар', orders: 'Захиалга', products: 'Барааны жагсаалт', customers: 'Үйлчлүүлэгч', settings: 'Тохиргоо' })[tab] || 'Самбар';
+    const sChip = (s) => {
+      const map = [
+        { bg: 'var(--marigold-200)', fg: 'var(--ink-900)' },
+        { bg: 'var(--cobalt-100)', fg: 'var(--cobalt-600)' },
+        { bg: 'var(--paper-100)', fg: 'var(--ink-800)' },
+        { bg: 'var(--cobalt-600)', fg: 'var(--paper-0)' },
+        { bg: 'var(--green-100)', fg: 'var(--green-500)' },
+      ][s] || { bg: 'var(--paper-100)', fg: 'var(--ink-800)' };
+      return { fontFamily: 'var(--font-mono)', fontSize: '11.5px', fontWeight: 700, padding: '4px 10px', borderRadius: '999px', border: '2px solid var(--line-ink)', background: map.bg, color: map.fg, whiteSpace: 'nowrap' };
+    };
+    const adminOrders = this.ADMIN_ORDERS.map(o => ({
+      no: o.no, cust: o.cust, date: o.date, items: o.items + ' бараа', total: this.fmt(o.total),
+      statusLabel: this.STATUS[o.status], statusStyle: sChip(o.status),
+    }));
+    const ordersOpen = this.ADMIN_ORDERS.filter(o => o.status < 4).length;
+    const adminProducts = this.PRODUCTS.map(p => {
+      const stock = this.STOCK[p.id] != null ? this.STOCK[p.id] : 20;
+      const low = stock > 0 && stock <= 10;
+      const out = stock === 0;
+      return {
+        name: p.name, icon: p.icon, cat: p.category, price: this.fmt(p.price),
+        stock: String(stock), views: (st.views[p.id] || 0).toLocaleString('en-US'),
+        stockStyle: { fontFamily: 'var(--font-mono)', fontWeight: 700, fontSize: '14px', color: out ? 'var(--red-500)' : (low ? 'var(--marigold-600)' : 'var(--text-strong)') },
+        statusLabel: out ? 'Дууссан' : (low ? 'Бага үлдсэн' : 'Хангалттай'),
+        statusStyle: { fontFamily: 'var(--font-mono)', fontSize: '11.5px', fontWeight: 700, padding: '4px 10px', borderRadius: '999px', border: '2px solid var(--line-ink)', background: out ? 'var(--red-100)' : (low ? 'var(--marigold-200)' : 'var(--green-100)'), color: out ? 'var(--red-500)' : (low ? 'var(--ink-900)' : 'var(--green-500)'), whiteSpace: 'nowrap' },
+      };
+    });
+    const lowStockCount = adminProducts.filter(p => p.statusLabel !== 'Хангалттай').length;
+    const adminCustomers = this.CUSTOMERS.map(c => ({
+      name: c.name, phone: c.phone, orders: String(c.orders), spent: this.fmt(c.spent), joined: c.joined, tier: c.tier, icon: c.pet, initial: c.name.charAt(0),
+      tierStyle: { fontFamily: 'var(--font-mono)', fontSize: '11.5px', fontWeight: 700, padding: '4px 10px', borderRadius: '999px', border: '2px solid var(--line-ink)', background: c.tier === 'Алтан' ? 'var(--marigold-500)' : (c.tier === 'Мөнгөн' ? 'var(--paper-100)' : (c.tier === 'Хүрэл' ? 'var(--marigold-200)' : 'var(--cobalt-100)')), color: 'var(--ink-900)', whiteSpace: 'nowrap' },
+    }));
+    const adminInventoryValue = this.fmt(this.PRODUCTS.reduce((s, p) => s + p.price * (this.STOCK[p.id] != null ? this.STOCK[p.id] : 20), 0));
+
+    return {
+      storeName,
+      isHome: st.screen === 'home', isList: st.screen === 'list', isDetail: st.screen === 'detail', isCheckout: st.screen === 'checkout',
+      isAdmin: st.screen === 'admin', notAdmin: st.screen !== 'admin', goAdmin: () => this.goAdmin(),
+      adminNav, adminTabTitle,
+      isOverview: tab === 'overview', isOrdersTab: tab === 'orders', isProductsTab: tab === 'products', isCustomersTab: tab === 'customers', isSettingsTab: tab === 'settings',
+      adminOrders, adminProducts, adminCustomers,
+      adminOrdersOpen: ordersOpen, adminLowStock: lowStockCount, adminCustomerCount: this.CUSTOMERS.length,
+      adminInventoryValue, adminProductCount: this.PRODUCTS.length,
+      adminKpis, weekBars, topProducts, sources, adminFeed,
+      adminViewsTotal: totalViews.toLocaleString('en-US'),
+      adminAtcTotal: totalAtc.toLocaleString('en-US'),
+      adminOrdersToday: ordersToday, adminLiveNow: st.liveNow,
+      adminSessionViews: st.sessionViews,
+      homeVariant: st.homeVariant,
+      isVariantA: st.homeVariant === 'A', isVariantB: st.homeVariant === 'B', isVariantC: st.homeVariant === 'C',
+      variantA: () => this.setVariant('A'), variantB: () => this.setVariant('B'), variantC: () => this.setVariant('C'),
+      vBtnA: this.segStyle(st.homeVariant === 'A', true, false), vBtnB: this.segStyle(st.homeVariant === 'B', false, false), vBtnC: this.segStyle(st.homeVariant === 'C', false, true),
+      goHome: () => this.goHome(), goListAll: () => this.goListAll(), goBack: () => this.goBack(),
+      openCart: () => this.openCart(), closeCart: () => this.closeCart(), goCheckout: () => this.goCheckout(),
+      stop: (e) => e.stopPropagation(),
+      onSearch: (e) => this.onSearch(e), query: st.query,
+      cartCount, cartCountShow: cartCount > 0,
+      catTiles, catChips, typeChips,
+      featured, shown, shownCount: shown.length, hasResults: shown.length > 0, noResults: shown.length === 0,
+      cur, detailQty: st.detailQty, incDetail: () => this.incDetail(), decDetail: () => this.decDetail(),
+      addCur: () => this.addToCart(cp, st.detailQty),
+      related,
+      cartItems, cartOpen: st.cartOpen, cartEmpty: st.cart.length === 0, cartNotEmpty: st.cart.length > 0,
+      subtotalFmt: this.fmt(subtotal), shipFmt: shipping === 0 ? '\u04ae\u043d\u044d\u0433\u04af\u0439' : this.fmt(shipping), totalFmt: this.fmt(subtotal + shipping),
+      banks, qrEl: this.qrEl, timer,
+      notPaid: !st.paid, paid: st.paid, payNow: () => this.payNow(), reset: () => this.reset(), orderNo: st.orderNo,
+      isWishlist: st.screen === 'wishlist', isAccount: st.screen === 'account', isOrder: st.screen === 'order', isAuth: st.screen === 'auth', isFaq: st.screen === 'faq', isAbout: st.screen === 'about', isSale: st.screen === 'sale', isLoyalty: st.screen === 'loyalty', isNotFound: st.screen === 'notfound',
+      goAccount: () => this.goAccount(), goWishlist: () => this.goWishlist(), goAuth: () => this.goAuth(), goFaq: () => this.goFaq(), goAbout: () => this.goAbout(), goSale: () => this.goSale(), goLoyalty: () => this.goLoyalty(), goNotFound: () => this.goNotFound(), login: () => this.login(), logout: () => this.logout(),
+      goListCat: () => this.goList('cat'), goListDog: () => this.goList('dog'),
+      loggedIn: st.loggedIn,
+      wishlistItems, wishlistCount: wishlistItems.length, wishlistEmpty: wishlistItems.length === 0, wishlistNotEmpty: wishlistItems.length > 0,
+      orders, orderCount: this.ORDERS.length, curOrder, reviews, saleItems, saleCount: saleItems.length, faqs, loyalty,
+      userName: 'Болормаа Б.', userPhone: '+976 9911-2233', userInitial: 'Б', memberSince: '2024 оноос гишүүн',
+      reviewStars: [1, 2, 3, 4, 5].map(n => ({ cls: n <= st.reviewRating ? 'ph-fill ph-star' : 'ph ph-star', pick: () => this.setReviewRating(n) })),
+      reviewText: st.reviewText, onReviewText: (e) => this.onReviewText(e), submitReview: () => this.submitReview(), cancelReview: () => this.cancelReview(),
+    };
+  }
+}
+</script>
+</body>
+</html>

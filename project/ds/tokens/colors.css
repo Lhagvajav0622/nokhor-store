@@ -1,0 +1,75 @@
+/* ============================================================
+   Нөхөр — Color tokens
+   Risograph / indie-comic palette. High-contrast, limited,
+   ink-on-paper. Derived from the reference illustrations:
+   electric cobalt, marigold cat-eye yellow, ink black,
+   warm cream paper, watercolour peach.
+   ============================================================ */
+
+:root {
+  /* --- Base palette (raw) --- */
+  --ink-900: #15151b;   /* near-black blue-ink — text, outlines */
+  --ink-800: #24242e;
+  --ink-700: #3a3a47;
+  --ink-500: #6a6a78;   /* muted ink — secondary text */
+  --ink-300: #a8a39a;   /* faint on paper */
+
+  --paper-0:  #fbf6ea;  /* brightest paper highlight */
+  --paper-50: #f5edd9;  /* default page background — warm cream */
+  --paper-100:#efe4cc;  /* sunken paper / wells */
+  --paper-200:#e6d8b9;  /* paper edge / borders on cream */
+
+  --cobalt-700:#1b27a3;
+  --cobalt-600:#2536ce;  /* PRIMARY — electric riso blue */
+  --cobalt-500:#3a4be0;
+  --cobalt-200:#9aa6ef;  /* riso blue tint (duotone mid) */
+  --cobalt-100:#c9d0f6;
+
+  --marigold-600:#f5b115; /* deep marigold */
+  --marigold-500:#ffc833; /* SECONDARY — cat-eye yellow */
+  --marigold-200:#ffe39a; /* soft yellow wash */
+
+  --peach-500:#ef9f63;   /* watercolour clay/peach accent */
+  --peach-200:#f7cfa8;
+
+  /* --- Semantic / status (riso-tinted) --- */
+  --green-500:#2f9457;   /* success */
+  --green-100:#cfe8d8;
+  --red-500:#e24a31;     /* danger / sale */
+  --red-100:#f8d3ca;
+  --blue-info:#2536ce;
+
+  /* ============================================================
+     Semantic aliases — use these in components
+     ============================================================ */
+
+  /* Surfaces */
+  --surface-page:    var(--paper-50);
+  --surface-card:    var(--paper-0);
+  --surface-sunken:  var(--paper-100);
+  --surface-ink:     var(--ink-900);   /* dark blocks / footer */
+  --surface-brand:   var(--cobalt-600);
+  --surface-accent:  var(--marigold-500);
+
+  /* Text */
+  --text-strong:   var(--ink-900);
+  --text-body:     var(--ink-800);
+  --text-muted:    var(--ink-500);
+  --text-on-ink:   var(--paper-0);
+  --text-on-brand: var(--paper-0);
+  --text-on-accent:var(--ink-900);
+  --text-link:     var(--cobalt-600);
+
+  /* Lines & borders — the comic ink outline */
+  --line-ink:    var(--ink-900);
+  --line-soft:   var(--paper-200);
+  --line-brand:  var(--cobalt-600);
+
+  /* Brand quick refs */
+  --brand-primary:   var(--cobalt-600);
+  --brand-secondary: var(--marigold-500);
+  --brand-peach:     var(--peach-500);
+
+  /* States */
+  --focus-ring: var(--cobalt-600);
+}

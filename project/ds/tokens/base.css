@@ -1,0 +1,64 @@
+/* ============================================================
+   Нөхөр — Base layer
+   Resets, document defaults, and a few brand utilities
+   (paper grain, ink outline, hard-shadow press).
+   ============================================================ */
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+  margin: 0;
+  font-family: var(--font-body);
+  font-size: var(--text-md);
+  font-weight: var(--fw-medium);
+  line-height: var(--leading-normal);
+  color: var(--text-body);
+  background-color: var(--surface-page);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+h1, h2, h3, h4 {
+  font-family: var(--font-display);
+  color: var(--text-strong);
+  line-height: var(--leading-tight);
+  letter-spacing: var(--tracking-tight);
+  margin: 0 0 0.4em;
+  font-weight: var(--fw-bold);
+}
+
+p { margin: 0 0 1em; text-wrap: pretty; }
+
+a { color: var(--text-link); text-underline-offset: 3px; }
+
+button { font-family: inherit; }
+
+::selection { background: var(--marigold-500); color: var(--ink-900); }
+
+/* --- Paper grain: subtle risograph fibre over the page ---
+   Apply .grain to any element; it lays a faint noise wash on top. */
+.grain { position: relative; }
+.grain::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.5;
+  mix-blend-mode: multiply;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.16'/%3E%3C/svg%3E");
+}
+
+/* --- Brand utility helpers --- */
+.ink-outline { border: var(--border-ink) solid var(--border-color); }
+.hard-shadow { box-shadow: var(--shadow-hard); }
+
+/* UPPERCASE mono label */
+.label-mono {
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-weight: var(--fw-bold);
+}

@@ -1,0 +1,11 @@
+/* ============================================================
+   Нөхөр — Iconography
+   Phosphor Icons (web font). Friendly, even-stroke, with a full
+   animal set (cat, dog, paw-print, bone, fish, bird).
+   Usage:  <i class="ph ph-cat"></i>  ·  <i class="ph-fill ph-heart"></i>
+   Weights: ph (regular) · ph-bold · ph-fill
+   ============================================================ */
+
+@import url('https://unpkg.com/@phosphor-icons/web@2.1.1/src/regular/style.css');
+@import url('https://unpkg.com/@phosphor-icons/web@2.1.1/src/bold/style.css');
+@import url('https://unpkg.com/@phosphor-icons/web@2.1.1/src/fill/style.css');
