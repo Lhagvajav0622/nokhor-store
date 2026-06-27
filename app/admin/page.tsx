@@ -159,6 +159,16 @@ export default function AdminPage() {
     }).catch(() => {})
   }
 
+  async function deleteOrder(id: string | undefined, no: string) {
+    if (!id) return
+    if (!confirm(`"${no}" захиалгыг устгах уу? Энэ үйлдлийг буцаах боломжгүй.`)) return
+    setOrders((os) => os.filter((o) => o.id !== id))
+    await fetch(`/api/admin/orders?id=${encodeURIComponent(id)}`, {
+      method: 'DELETE',
+      headers: headers(),
+    }).catch(() => {})
+  }
+
   async function updateProduct(id: string, fields: Partial<Product>) {
     setProducts((ps) => ps.map((p) => (p.id === id ? { ...p, ...fields } : p)))
     await fetch('/api/admin/products', {
@@ -446,8 +456,8 @@ export default function AdminPage() {
                   <table className="w-full text-[14px]">
                     <thead>
                       <tr className="border-b-[2.5px] border-ink-900 bg-paper-100">
-                        {['Дугаар', 'Хэрэглэгч', 'Огноо', 'Бараа', 'Нийт', 'Статус'].map((h) => (
-                          <th key={h} className="text-left px-4 py-3 font-mono text-[12px] uppercase tracking-[.06em] text-ink-500">{h}</th>
+                        {['Дугаар', 'Хэрэглэгч', 'Огноо', 'Бараа', 'Нийт', 'Статус', ''].map((h, i) => (
+                          <th key={i} className="text-left px-4 py-3 font-mono text-[12px] uppercase tracking-[.06em] text-ink-500">{h}</th>
                         ))}
                       </tr>
                     </thead>
@@ -470,6 +480,13 @@ export default function AdminPage() {
                               </select>
                             ) : (
                               <span className={`font-mono text-[11.5px] font-bold px-2.5 py-1 rounded-pill border-2 border-ink-900 ${STATUS_CHIP_STYLE[o.status]}`}>{STATUS_LABELS[o.status]}</span>
+                            )}
+                          </td>
+                          <td className="px-4 py-3">
+                            {o.id && (
+                              <button onClick={() => deleteOrder(o.id, o.no)} aria-label="Захиалга устгах" className="text-ink-500 hover:text-brand-red transition-colors p-1">
+                                <Trash weight="bold" size={18} />
+                              </button>
                             )}
                           </td>
                         </tr>

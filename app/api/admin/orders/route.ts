@@ -53,3 +53,18 @@ export async function PATCH(req: Request) {
   await db.collection('orders').doc(id).set({ status }, { merge: true })
   return NextResponse.json({ ok: true })
 }
+
+// Delete an order (?id=...)
+export async function DELETE(req: Request) {
+  const expected = process.env.ADMIN_PASSWORD
+  if (expected && req.headers.get('x-admin-password') !== expected) {
+    return NextResponse.json({ ok: false, error: 'unauthorized' }, { status: 401 })
+  }
+  const db = getDb()
+  if (!db) return NextResponse.json({ ok: false, error: 'not configured' }, { status: 503 })
+
+  const id = new URL(req.url).searchParams.get('id')
+  if (!id) return NextResponse.json({ ok: false, error: 'id required' }, { status: 400 })
+  await db.collection('orders').doc(id).delete()
+  return NextResponse.json({ ok: true })
+}
