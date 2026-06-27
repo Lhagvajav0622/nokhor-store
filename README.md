@@ -1,25 +1,96 @@
-# CODING AGENTS: READ THIS FIRST
+# Нөхөр Store — Улаанбаатарын амьтны дэлгүүр
 
-This is a **handoff bundle** from Claude Design (claude.ai/design).
+Монголын амьтны тэжээл, дагалдах хэрэгсэл зардаг онлайн дэлгүүр.
 
-A user mocked up designs in HTML/CSS/JS using an AI design tool, then exported this bundle so a coding agent can implement the designs for real.
+**Stack:** Next.js 15 · App Router · Tailwind CSS · TypeScript · Zustand
 
-## What you should do — IMPORTANT
+---
 
-**Read the chat transcripts first.** There are 3 chat transcript(s) in `chats/`. The transcripts show the full back-and-forth between the user and the design assistant — they tell you **what the user actually wants** and **where they landed** after iterating. Don't skip them. The final HTML files are the output, but the chat is where the intent lives.
+## Хөгжүүлэлт
 
-**Read `project/Нөхөр Store.dc.html` in full.** The user had this file open when they triggered the handoff, so it's almost certainly the primary design they want built. Read it top to bottom — don't skim. Then **follow its imports**: open every file it pulls in (shared components, CSS, scripts) so you understand how the pieces fit together before you start implementing.
+```bash
+npm install
+npm run dev
+```
 
-**If anything is ambiguous, ask the user to confirm before you start implementing.** It's much cheaper to clarify scope up front than to build the wrong thing.
+Хөтчийг `http://localhost:3000` хаягт нееж харна уу.
 
-## About the design files
+## Бүтэц
 
-The design medium is **HTML/CSS/JS** — these are prototypes, not production code. Your job is to **recreate them pixel-perfectly** in whatever technology makes sense for the target codebase (React, Vue, native, whatever fits). Match the visual output; don't copy the prototype's internal structure unless it happens to fit.
+```
+app/                   # Next.js App Router хуудаснууд
+  page.tsx             # Нүүр хуудас
+  products/            # Барааны жагсаалт + дэлгэрэнгүй
+  checkout/            # Захиалах хуудас
+  account/             # Профайл
+  order/[id]/          # Захиалгын мэдээлэл
+  wishlist/            # Дуртай бараа
+  faq/                 # Түгээмэл асуулт
+  about/               # Бидний тухай
+  sale/                # Хямдрал
+  loyalty/             # Урамшуулал
+  admin/               # Удирдлагын самбар (/admin)
+  api/order/           # Захиалгын имэйл илгээх API
+components/            # Дахин ашиглагдах бүрэлдэхүүн хэсгүүд
+data/products.ts       # Барааны мэдээлэл (энд бараа нэм/засаарай)
+lib/store.ts           # Cart + wishlist state (Zustand)
+```
 
-**Don't render these files in a browser or take screenshots unless the user asks you to.** Everything you need — dimensions, colors, layout rules — is spelled out in the source. Read the HTML and CSS directly; a screenshot won't tell you anything they don't.
+## Бараа нэмэх / засах
 
-## Bundle contents
+`data/products.ts` файлыг нээж `PRODUCTS` array-д бараа нэм эсвэл засаарай.
 
-- `README.md` — this file
-- `chats/` — conversation transcripts (read these!)
-- `project/` — the `Pet accessories website Mongolia` project files (HTML prototypes, assets, components)
+```ts
+{
+  id: 'p13',
+  name: 'Шинэ бараа',
+  category: 'Нохой · Хоол',
+  price: 25000,
+  rating: 4.5,
+  icon: 'Dog',       // Cat | Dog | Rabbit | Fish | Bird
+  pet: 'dog',
+  type: 'food',
+  desc: 'Барааны тайлбар',
+  stock: 50,
+}
+```
+
+## Имэйл тохиргоо (захиалгын мэдэгдэл)
+
+1. [resend.com](https://resend.com) дээр бүртгүүлнэ (3,000 имэйл/сар үнэгүй)
+2. API key аваад `.env.local` файлд хадгална:
+
+```env
+RESEND_API_KEY=re_xxxxxxxxxxxx
+ORDER_EMAIL=lhagvajavproo@gmail.com
+```
+
+> API key байхгүй бол захиалга console-д логддог — имэйл явахгүй.
+
+## QPay нэмэх (ирээдүйд)
+
+`app/checkout/page.tsx` файлд "QPay coming soon" хэсгийг олж QPay SDK-тайгаа холбоно уу.
+
+## Deploy — Vercel
+
+```bash
+# 1. GitHub push
+git push -u origin main
+
+# 2. vercel.com → New Project → GitHub repo → Import
+# 3. Environment variables:
+#    RESEND_API_KEY = таны Resend API key
+#    ORDER_EMAIL    = lhagvajavproo@gmail.com
+```
+
+### Custom domain
+
+Vercel Dashboard → Project → Settings → Domains → Add domain → DNS тохиргоог хийнэ.
+
+## Удирдлагын самбар
+
+`/admin` хаягт очно уу — захиалга, бараа, хэрэглэгч, аналитик.
+
+---
+
+© 2026 Нөхөр ХХК · Улаанбаатар

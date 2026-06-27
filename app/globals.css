@@ -1,0 +1,85 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ── Google Fonts ── */
+@import url('https://fonts.googleapis.com/css2?family=Unbounded:wght@700;800;900&family=Rubik:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;600;700&display=swap');
+
+/* ── Base ── */
+*, *::before, *::after { box-sizing: border-box; }
+
+body {
+  background: #f5edd9;
+  color: #24242e;
+  font-family: 'Rubik', system-ui, sans-serif;
+  font-weight: 500;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── Grain texture ── */
+.grain::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+  background-size: 200px 200px;
+}
+
+/* ── Press / Lift interaction ── */
+.nx-press {
+  transition: transform 120ms cubic-bezier(0.22,1,0.36,1),
+              box-shadow 120ms cubic-bezier(0.22,1,0.36,1);
+}
+.nx-press:hover {
+  transform: translate(-1px, -1px);
+  box-shadow: 6px 6px 0 0 #15151b;
+}
+.nx-press:active {
+  transform: translate(2px, 2px);
+  box-shadow: 2px 2px 0 0 #15151b;
+}
+
+.nx-lift {
+  transition: transform 140ms cubic-bezier(0.22,1,0.36,1),
+              box-shadow 140ms cubic-bezier(0.22,1,0.36,1);
+}
+.nx-lift:hover {
+  transform: translate(-3px, -3px);
+  box-shadow: 7px 7px 0 0 #15151b;
+}
+
+.nx-tile {
+  transition: transform 140ms cubic-bezier(0.22,1,0.36,1),
+              box-shadow 140ms cubic-bezier(0.22,1,0.36,1);
+}
+.nx-tile:hover {
+  transform: translate(-3px, -3px) rotate(-1deg);
+  box-shadow: 7px 7px 0 0 #15151b;
+}
+
+.nx-bank {
+  transition: transform 120ms, box-shadow 120ms;
+}
+.nx-bank:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: 4px 4px 0 0 #15151b;
+}
+
+.nx-icbtn {
+  transition: transform 120ms, background 120ms, box-shadow 120ms;
+}
+.nx-icbtn:hover {
+  transform: translate(-1px, -1px);
+}
+
+/* ── Focus ── */
+input:focus, textarea:focus, select:focus {
+  outline: none;
+  border-color: #2536ce !important;
+}
+
+/* ── Scrollbar ── */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: #efe4cc; }
+::-webkit-scrollbar-thumb { background: #a8a39a; border-radius: 3px; }
