@@ -2,12 +2,13 @@
 
 import Link from 'next/link'
 import { ArrowLeft } from '@phosphor-icons/react'
-import { PRODUCTS } from '@/data/products'
 import ProductCard from '@/components/ProductCard'
-
-const SALE_PRODUCTS = PRODUCTS.filter((p) => p.oldPrice)
+import { useProducts } from '@/lib/useProducts'
 
 export default function SalePage() {
+  const products = useProducts()
+  const saleProducts = products.filter((p) => p.oldPrice)
+
   return (
     <div className="max-w-[1200px] mx-auto px-4 sm:px-6 py-8">
       <Link href="/" className="inline-flex items-center gap-1.5 font-body font-bold text-[15px] text-ink-900 mb-5 hover:text-cobalt-600 transition-colors">
@@ -47,16 +48,16 @@ export default function SalePage() {
         </p>
       </div>
 
-      {SALE_PRODUCTS.length === 0 ? (
+      {saleProducts.length === 0 ? (
         <div className="text-center py-16 text-ink-500">
           <p className="font-bold text-ink-900">Одоогоор хямдрал байхгүй 🐾</p>
           <Link href="/products" className="mt-4 inline-block text-cobalt-600 font-bold hover:underline">Бүх бараа харах →</Link>
         </div>
       ) : (
         <>
-          <p className="font-mono text-[13px] text-ink-500 mb-4">{SALE_PRODUCTS.length} хямдарсан бараа</p>
+          <p className="font-mono text-[13px] text-ink-500 mb-4">{saleProducts.length} хямдарсан бараа</p>
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-5">
-            {SALE_PRODUCTS.map((p) => (
+            {saleProducts.map((p) => (
               <ProductCard key={p.id} product={p} />
             ))}
           </div>

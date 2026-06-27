@@ -12,8 +12,9 @@ import {
   ArrowsCounterClockwise,
   ShieldCheck,
 } from '@phosphor-icons/react'
-import { PRODUCTS, REVIEWS, fmt } from '@/data/products'
+import { REVIEWS, fmt } from '@/data/products'
 import { useStore } from '@/lib/store'
+import { useProducts } from '@/lib/useProducts'
 import ProductCard from '@/components/ProductCard'
 import ProductIcon from '@/components/ProductIcon'
 
@@ -28,8 +29,9 @@ export default function ProductDetailPage() {
   const router = useRouter()
   const { addToCart } = useStore()
   const [qty, setQty] = useState(1)
+  const products = useProducts()
 
-  const product = PRODUCTS.find((p) => p.id === id)
+  const product = products.find((p) => p.id === id)
 
   if (!product) {
     return (
@@ -43,7 +45,7 @@ export default function ProductDetailPage() {
     )
   }
 
-  const related = PRODUCTS.filter((p) => p.pet === product.pet && p.id !== product.id).slice(0, 4)
+  const related = products.filter((p) => p.pet === product.pet && p.id !== product.id).slice(0, 4)
   const discountPct = product.oldPrice
     ? Math.round((1 - product.price / product.oldPrice) * 100)
     : 0

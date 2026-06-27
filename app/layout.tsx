@@ -3,6 +3,7 @@ import './globals.css'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 import CartDrawer from '@/components/CartDrawer'
+import ProductsLoader from '@/components/ProductsLoader'
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://nokhor.mn'
 
@@ -48,6 +49,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
       </head>
       <body className="min-h-screen bg-paper-50 text-ink-800">
+        <ProductsLoader />
         <Header />
         <main>{children}</main>
         <Footer />

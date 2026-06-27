@@ -3,14 +3,16 @@
 import { useRouter } from 'next/navigation'
 import { X, ShoppingCart, ShoppingBag, Minus, Plus, Trash } from '@phosphor-icons/react'
 import { useStore, cartTotal, cartCount } from '@/lib/store'
-import { PRODUCTS, fmt } from '@/data/products'
+import { fmt } from '@/data/products'
+import { useProducts } from '@/lib/useProducts'
 import ProductIcon from './ProductIcon'
 
 export default function CartDrawer() {
   const router = useRouter()
   const { cart, cartOpen, closeCart, setQty, removeFromCart } = useStore()
+  const products = useProducts()
 
-  const subtotal = cartTotal(cart, PRODUCTS)
+  const subtotal = cartTotal(cart, products)
   const FREE_SHIP = 100000
   const shipping = subtotal >= FREE_SHIP || subtotal === 0 ? 0 : 5900
   const total = subtotal + shipping
@@ -63,7 +65,7 @@ export default function CartDrawer() {
             </div>
           ) : (
             cart.map((ci) => {
-              const p = PRODUCTS.find((pr) => pr.id === ci.id)
+              const p = products.find((pr) => pr.id === ci.id)
               if (!p) return null
               return (
                 <div

@@ -12,7 +12,6 @@ import {
   PawPrint,
 } from '@phosphor-icons/react'
 import { useStore, cartCount } from '@/lib/store'
-import { PRODUCTS } from '@/data/products'
 
 export default function Header() {
   const router = useRouter()

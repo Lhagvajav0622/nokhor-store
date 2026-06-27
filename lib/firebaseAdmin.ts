@@ -25,6 +25,13 @@ export function getDb(): Firestore | null {
       ? getApps()[0]
       : initializeApp({ credential: cert(json) })
     cached = getFirestore(app)
+    // Let documents omit optional fields (oldPrice, badge, note, …) instead of
+    // throwing on `undefined`.
+    try {
+      cached.settings({ ignoreUndefinedProperties: true })
+    } catch {
+      /* settings can only be applied once; ignore if already set */
+    }
     return cached
   } catch (err) {
     console.error('[Firebase] init failed — check FIREBASE_SERVICE_ACCOUNT', err)

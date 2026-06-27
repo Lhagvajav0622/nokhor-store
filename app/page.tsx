@@ -7,9 +7,8 @@ import {
   Cat, Dog, Rabbit, Fish,
 } from '@phosphor-icons/react'
 import ProductCard from '@/components/ProductCard'
-import { PRODUCTS, PET_CATEGORIES } from '@/data/products'
-
-const FEATURED = PRODUCTS.slice(0, 8)
+import { PET_CATEGORIES } from '@/data/products'
+import { useProducts } from '@/lib/useProducts'
 
 const CAT_ICONS: Record<string, React.ReactNode> = {
   cat:    <Cat weight="fill" size={38} />,
@@ -22,6 +21,8 @@ const TILE_CATS = PET_CATEGORIES.filter(c => c.id !== 'all' && c.id !== 'bird')
 
 export default function HomePage() {
   const router = useRouter()
+  const products = useProducts()
+  const featured = products.slice(0, 8)
 
   return (
     <div className="pb-12">
@@ -122,7 +123,7 @@ export default function HomePage() {
           </Link>
         </div>
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-5">
-          {FEATURED.map((p) => (
+          {featured.map((p) => (
             <ProductCard key={p.id} product={p} />
           ))}
         </div>

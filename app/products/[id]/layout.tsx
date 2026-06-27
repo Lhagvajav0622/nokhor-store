@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
-import { PRODUCTS, fmt } from '@/data/products'
+import { fmt } from '@/data/products'
+import { getProductById } from '@/lib/products'
 
 export async function generateMetadata({
   params,
@@ -7,7 +8,7 @@ export async function generateMetadata({
   params: Promise<{ id: string }>
 }): Promise<Metadata> {
   const { id } = await params
-  const product = PRODUCTS.find((p) => p.id === id)
+  const product = await getProductById(id)
 
   if (!product) {
     return {

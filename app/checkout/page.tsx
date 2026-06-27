@@ -13,12 +13,14 @@ import {
   Info,
 } from '@phosphor-icons/react'
 import { useStore, cartTotal } from '@/lib/store'
-import { PRODUCTS, BANKS, fmt } from '@/data/products'
+import { BANKS, fmt } from '@/data/products'
+import { useProducts } from '@/lib/useProducts'
 import ProductIcon from '@/components/ProductIcon'
 
 export default function CheckoutPage() {
   const router = useRouter()
   const { cart, clearCart } = useStore()
+  const products = useProducts()
 
   const [name, setName] = useState('')
   const [phone, setPhone] = useState('')
@@ -30,7 +32,7 @@ export default function CheckoutPage() {
   const [error, setError] = useState('')
   const [copiedBank, setCopiedBank] = useState('')
 
-  const subtotal = cartTotal(cart, PRODUCTS)
+  const subtotal = cartTotal(cart, products)
   const FREE_SHIP = 100000
   const shipping = subtotal >= FREE_SHIP || subtotal === 0 ? 0 : 5900
   const total = subtotal + shipping
@@ -59,8 +61,8 @@ export default function CheckoutPage() {
 
     const no = 'NX-' + String(Math.floor(100000 + Math.random() * 899999))
     const items = cart.map((ci) => {
-      const p = PRODUCTS.find((pr) => pr.id === ci.id)
-      return { name: p?.name, qty: ci.qty, price: p ? fmt(p.price * ci.qty) : '' }
+      const p = products.find((pr) => pr.id === ci.id)
+      return { id: ci.id, name: p?.name, qty: ci.qty, price: p ? fmt(p.price * ci.qty) : '' }
     })
 
     try {
@@ -204,7 +206,7 @@ export default function CheckoutPage() {
               </h2>
               <div className="flex flex-col gap-2.5">
                 {cart.map((ci) => {
-                  const p = PRODUCTS.find((pr) => pr.id === ci.id)
+                  const p = products.find((pr) => pr.id === ci.id)
                   if (!p) return null
                   return (
                     <div key={ci.id} className="flex items-center gap-3">

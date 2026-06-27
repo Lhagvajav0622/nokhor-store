@@ -3,12 +3,13 @@
 import Link from 'next/link'
 import { Heart, ArrowLeft, Storefront } from '@phosphor-icons/react'
 import { useStore } from '@/lib/store'
-import { PRODUCTS } from '@/data/products'
+import { useProducts } from '@/lib/useProducts'
 import ProductCard from '@/components/ProductCard'
 
 export default function WishlistPage() {
   const { favs } = useStore()
-  const items = PRODUCTS.filter((p) => favs[p.id])
+  const products = useProducts()
+  const items = products.filter((p) => favs[p.id])
 
   return (
     <div className="max-w-[1200px] mx-auto px-4 sm:px-6 py-8">

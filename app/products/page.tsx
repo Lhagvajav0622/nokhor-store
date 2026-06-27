@@ -4,12 +4,14 @@ import { useEffect, useState, useMemo, Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { MagnifyingGlass } from '@phosphor-icons/react'
 import ProductCard from '@/components/ProductCard'
-import { PRODUCTS, PET_CATEGORIES, PRODUCT_TYPES } from '@/data/products'
+import { PET_CATEGORIES, PRODUCT_TYPES } from '@/data/products'
 import { useStore } from '@/lib/store'
+import { useProducts } from '@/lib/useProducts'
 
 function ProductsInner() {
   const params = useSearchParams()
   const { searchQuery } = useStore()
+  const products = useProducts()
 
   const [pet, setPet] = useState(params.get('pet') || 'all')
   const [type, setType] = useState('all')
@@ -21,13 +23,13 @@ function ProductsInner() {
 
   const filtered = useMemo(() => {
     const q = searchQuery.trim().toLowerCase()
-    return PRODUCTS.filter(
+    return products.filter(
       (p) =>
         (pet === 'all' || p.pet === pet) &&
         (type === 'all' || p.type === type) &&
         (!q || (p.name + ' ' + p.category).toLowerCase().includes(q))
     )
-  }, [pet, type, searchQuery])
+  }, [products, pet, type, searchQuery])
 
   return (
     <div className="max-w-[1200px] mx-auto px-4 sm:px-6 py-8">
