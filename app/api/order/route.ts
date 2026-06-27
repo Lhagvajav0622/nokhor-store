@@ -1,4 +1,6 @@
 import { NextResponse } from 'next/server'
+import { getDb } from '@/lib/firebaseAdmin'
+import { FieldValue } from 'firebase-admin/firestore'
 
 type OrderItem = { name?: string; qty: number; price: string }
 
@@ -12,8 +14,38 @@ type OrderPayload = {
   total: string
 }
 
+async function saveToFirestore(body: OrderPayload) {
+  const db = getDb()
+  if (!db) return
+  try {
+    const itemCount = body.items.reduce((s, it) => s + (it.qty || 0), 0)
+    const now = new Date()
+    const date = `${now.getFullYear()}.${String(now.getMonth() + 1).padStart(2, '0')}.${String(
+      now.getDate()
+    ).padStart(2, '0')}`
+    await db.collection('orders').add({
+      no: body.orderNo,
+      cust: body.name,
+      phone: body.phone,
+      address: body.address,
+      note: body.note || '',
+      lineItems: body.items,
+      items: itemCount,
+      total: body.total,
+      date,
+      status: 0,
+      createdAt: FieldValue.serverTimestamp(),
+    })
+  } catch (err) {
+    console.error('[Firestore order save]', err)
+  }
+}
+
 export async function POST(req: Request) {
   const body: OrderPayload = await req.json()
+
+  // Persist to Firestore if configured (non-blocking for the email flow).
+  await saveToFirestore(body)
 
   const apiKey = process.env.RESEND_API_KEY
   const toEmail = process.env.ORDER_EMAIL || 'lhagvajavproo@gmail.com'

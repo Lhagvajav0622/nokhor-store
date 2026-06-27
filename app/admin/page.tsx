@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import {
   Gauge,
@@ -65,8 +65,142 @@ const NAV_ITEMS: { key: Tab; label: string; icon: React.ReactNode; badge?: strin
   { key: 'settings',   label: 'Тохиргоо',        icon: <Gear size={20} weight="fill" /> },
 ]
 
+type AdminOrder = {
+  id?: string
+  no: string
+  cust: string
+  date: string
+  items: number
+  total: number | string
+  status: number
+}
+
 export default function AdminPage() {
   const [tab, setTab] = useState<Tab>('overview')
+  const [checking, setChecking] = useState(true)
+  const [needsPw, setNeedsPw] = useState(false)
+  const [authed, setAuthed] = useState(false)
+  const [pw, setPw] = useState('')
+  const [pwError, setPwError] = useState('')
+  const [orders, setOrders] = useState<AdminOrder[]>(ADMIN_ORDERS)
+
+  async function verify(password: string): Promise<boolean> {
+    try {
+      const r = await fetch('/api/admin/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ password }),
+      })
+      const d = await r.json()
+      return Boolean(d.ok)
+    } catch {
+      return false
+    }
+  }
+
+  async function loadOrders(password: string) {
+    try {
+      const r = await fetch('/api/admin/orders', {
+        headers: password ? { 'x-admin-password': password } : {},
+      })
+      const d = await r.json()
+      if (d.ok && Array.isArray(d.orders) && d.orders.length > 0) setOrders(d.orders)
+    } catch {
+      /* keep placeholder data */
+    }
+  }
+
+  useEffect(() => {
+    let cancelled = false
+    async function init() {
+      try {
+        const r = await fetch('/api/admin/login')
+        const d = await r.json()
+        if (cancelled) return
+        if (!d.protected) {
+          setAuthed(true)
+          loadOrders('')
+          setChecking(false)
+          return
+        }
+        const saved = sessionStorage.getItem('nx-admin-pw')
+        if (saved && (await verify(saved))) {
+          if (cancelled) return
+          setAuthed(true)
+          loadOrders(saved)
+          setChecking(false)
+          return
+        }
+        sessionStorage.removeItem('nx-admin-pw')
+        setNeedsPw(true)
+        setChecking(false)
+      } catch {
+        if (!cancelled) {
+          setAuthed(true)
+          setChecking(false)
+        }
+      }
+    }
+    init()
+    return () => {
+      cancelled = true
+    }
+  }, [])
+
+  async function submitPw(e: React.FormEvent) {
+    e.preventDefault()
+    setPwError('')
+    const ok = await verify(pw)
+    if (ok) {
+      sessionStorage.setItem('nx-admin-pw', pw)
+      setAuthed(true)
+      setNeedsPw(false)
+      loadOrders(pw)
+    } else {
+      setPwError('Нууц үг буруу байна.')
+    }
+  }
+
+  if (checking) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-ink-900 text-paper-0" style={{ fontFamily: 'Rubik, sans-serif' }}>
+        <div className="font-display font-black text-[22px] animate-pulse">🐾 Ачааллаж байна…</div>
+      </div>
+    )
+  }
+
+  if (needsPw && !authed) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-ink-900 px-4" style={{ fontFamily: 'Rubik, sans-serif' }}>
+        <form
+          onSubmit={submitPw}
+          className="w-full max-w-[380px] bg-paper-0 border-4 border-ink-900 rounded-xl shadow-hard-lg p-7"
+        >
+          <div className="font-display font-black text-[26px] text-ink-900 mb-1">🐾 Нөхөр Admin</div>
+          <p className="text-[14px] text-ink-500 mb-5">Удирдлагын самбарт нэвтрэх нууц үгээ оруулна уу.</p>
+          <input
+            type="password"
+            value={pw}
+            onChange={(e) => setPw(e.target.value)}
+            placeholder="Нууц үг"
+            autoFocus
+            aria-invalid={!!pwError}
+            className="w-full h-[48px] px-4 font-body text-[15px] border-[2.5px] border-ink-900 rounded-md bg-paper-50 focus:outline-none focus:border-cobalt-600"
+          />
+          {pwError && <p className="text-brand-red text-[13px] font-semibold mt-2">{pwError}</p>}
+          <button
+            type="submit"
+            className="nx-press w-full mt-4 h-[50px] font-bold text-[16px] border-[2.5px] border-ink-900 rounded-pill bg-cobalt-600 text-paper-0 cursor-pointer shadow-hard"
+          >
+            Нэвтрэх
+          </button>
+          <Link href="/" className="block text-center mt-4 text-[13px] text-ink-500 hover:text-cobalt-600 font-bold">
+            ← Дэлгүүр рүү буцах
+          </Link>
+        </form>
+      </div>
+    )
+  }
 
   return (
     <div className="flex min-h-screen bg-ink-900" style={{ fontFamily: 'Rubik, sans-serif' }}>
@@ -241,13 +375,13 @@ export default function AdminPage() {
                     </tr>
                   </thead>
                   <tbody>
-                    {ADMIN_ORDERS.map((o) => (
-                      <tr key={o.no} className="border-b border-dashed border-paper-200 hover:bg-paper-50 transition-colors">
+                    {orders.map((o) => (
+                      <tr key={o.id ?? o.no} className="border-b border-dashed border-paper-200 hover:bg-paper-50 transition-colors">
                         <td className="px-4 py-3 font-mono font-bold text-ink-900">{o.no}</td>
                         <td className="px-4 py-3 font-bold text-ink-900">{o.cust}</td>
                         <td className="px-4 py-3 font-mono text-ink-500 text-[12px]">{o.date}</td>
                         <td className="px-4 py-3 text-ink-800">{o.items} бараа</td>
-                        <td className="px-4 py-3 font-mono font-bold text-ink-900">{fmt(o.total)}</td>
+                        <td className="px-4 py-3 font-mono font-bold text-ink-900">{typeof o.total === 'number' ? fmt(o.total) : o.total}</td>
                         <td className="px-4 py-3">
                           <span className={`font-mono text-[11.5px] font-bold px-2.5 py-1 rounded-pill border-2 border-ink-900 ${STATUS_CHIP_STYLE[o.status]}`}>
                             {STATUS_LABELS[o.status]}
