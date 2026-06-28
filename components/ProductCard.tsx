@@ -85,12 +85,12 @@ export default function ProductCard({ product: p, size = 'md' }: Props) {
           {p.rating}
         </span>
 
-        {/* Price row */}
-        <div className="mt-auto flex items-center justify-between gap-2 pt-2">
-          <div className="flex items-baseline gap-1.5">
-            <span className="font-mono font-bold text-[20px] text-ink-900">{fmt(p.price)}</span>
+        {/* Price row — stacks on narrow cards, side-by-side when there's room */}
+        <div className="mt-auto flex flex-col gap-2 pt-2 lg:flex-row lg:items-center lg:justify-between">
+          <div className="flex items-baseline gap-1.5 flex-wrap min-w-0">
+            <span className="font-mono font-bold text-[18px] sm:text-[20px] text-ink-900 whitespace-nowrap">{fmt(p.price)}</span>
             {p.oldPrice && (
-              <span className="font-mono font-semibold text-[13px] text-ink-500 line-through">
+              <span className="font-mono font-semibold text-[13px] text-ink-500 line-through whitespace-nowrap">
                 {fmt(p.oldPrice)}
               </span>
             )}
@@ -99,7 +99,7 @@ export default function ProductCard({ product: p, size = 'md' }: Props) {
             onClick={handleAdd}
             aria-label="Сагсанд нэмэх"
             disabled={p.soldOut}
-            className={`nx-press h-[34px] px-3.5 inline-flex items-center gap-1.5 font-bold text-[14px] border-[2.5px] border-ink-900 rounded-pill cursor-pointer shadow-hard-sm transition-colors ${
+            className={`nx-press h-[36px] px-3.5 w-full lg:w-auto inline-flex items-center justify-center gap-1.5 font-bold text-[14px] border-[2.5px] border-ink-900 rounded-pill cursor-pointer shadow-hard-sm transition-colors shrink-0 ${
               p.soldOut
                 ? 'bg-paper-100 text-ink-500 cursor-not-allowed opacity-60'
                 : 'bg-cobalt-600 text-paper-0'
