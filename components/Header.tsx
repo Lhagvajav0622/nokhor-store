@@ -39,7 +39,7 @@ export default function Header() {
       className="sticky top-0 z-30 bg-paper-50 border-b-[2.5px] border-ink-900"
       role="banner"
     >
-      <div className="max-w-[1200px] mx-auto px-4 sm:px-6 py-3 flex items-center gap-4">
+      <div className="max-w-[1200px] mx-auto px-4 sm:px-6 py-3 flex items-center justify-between gap-4">
         {/* Logo */}
         <Link
           href="/"
@@ -47,10 +47,10 @@ export default function Header() {
           aria-label="Нөхөр нүүр хуудас"
         >
           <span
-            className="w-10 h-10 rounded-[12px] bg-cobalt-600 border-[2.5px] border-ink-900 flex items-center justify-content-center shadow-hard-sm overflow-hidden"
+            className="w-10 h-10 rounded-[12px] bg-cobalt-600 border-[2.5px] border-ink-900 flex items-center justify-center shadow-hard-sm"
             aria-hidden="true"
           >
-            <PawPrint weight="fill" size={24} className="text-paper-0 m-auto mt-[7px] ml-[7px]" />
+            <PawPrint weight="fill" size={24} className="text-paper-0" />
           </span>
           <span
             className="font-display font-black text-2xl tracking-tight text-ink-900 leading-none"
