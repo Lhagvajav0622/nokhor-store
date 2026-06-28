@@ -42,7 +42,12 @@ export default function ProductCard({ product: p, size = 'md' }: Props) {
     >
       {/* Image area */}
       <div className="grain relative aspect-square bg-paper-100 border-b-[2.5px] border-ink-900 flex items-center justify-center overflow-hidden">
-        <ProductIcon name={p.icon} size={iconSize} className="text-ink-300" />
+        {p.image ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img src={p.image} alt={p.name} loading="lazy" className="absolute inset-0 w-full h-full object-cover" />
+        ) : (
+          <ProductIcon name={p.icon} size={iconSize} className="text-ink-300" />
+        )}
 
         {/* Badges */}
         <div className="absolute top-2.5 left-2.5 flex gap-1.5">

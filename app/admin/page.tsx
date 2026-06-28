@@ -4,7 +4,7 @@ import { useState, useEffect, useMemo } from 'react'
 import Link from 'next/link'
 import {
   Gauge, Receipt, Package, Users, Gear, ArrowLeft,
-  ShoppingBag, Wallet, UsersThree, ChartLineUp, Plus, Trash, Warning, X,
+  ShoppingBag, Wallet, UsersThree, ChartLineUp, Plus, Trash, Warning, X, PencilSimple,
 } from '@phosphor-icons/react'
 import { PRODUCTS, PET_CATEGORIES, PRODUCT_TYPES, fmt, type Product } from '@/data/products'
 
@@ -55,7 +55,13 @@ function tierFor(spent: number): string {
   return 'Шинэ'
 }
 
-const emptyForm = { name: '', category: '', price: '', stock: '', pet: 'cat', type: 'food', desc: '' }
+const emptyForm = { name: '', category: '', price: '', oldPrice: '', stock: '', pet: 'cat', type: 'food', desc: '', image: '', badge: '' }
+
+const BADGE_OPTIONS: { value: string; label: string; variant: 'sale' | 'new' | 'accent' }[] = [
+  { value: 'sale', label: 'Хямдрал', variant: 'sale' },
+  { value: 'new', label: 'Шинэ', variant: 'new' },
+  { value: 'accent', label: 'Онцлох', variant: 'accent' },
+]
 
 export default function AdminPage() {
   const [tab, setTab] = useState<Tab>('overview')
@@ -71,6 +77,7 @@ export default function AdminPage() {
   const [dbConfigured, setDbConfigured] = useState(true)
 
   const [showAdd, setShowAdd] = useState(false)
+  const [editingId, setEditingId] = useState<string | null>(null)
   const [form, setForm] = useState(emptyForm)
   const [saving, setSaving] = useState(false)
 
@@ -187,30 +194,57 @@ export default function AdminPage() {
     }).catch(() => {})
   }
 
-  async function addProduct(e: React.FormEvent) {
+  function startEdit(p: Product) {
+    setEditingId(p.id)
+    setForm({
+      name: p.name ?? '',
+      category: p.category ?? '',
+      price: String(p.price ?? ''),
+      oldPrice: p.oldPrice ? String(p.oldPrice) : '',
+      stock: String(p.stock ?? ''),
+      pet: p.pet ?? 'cat',
+      type: p.type ?? 'food',
+      desc: p.desc ?? '',
+      image: p.image ?? '',
+      badge: p.badge?.variant ?? '',
+    })
+    setShowAdd(true)
+    if (typeof window !== 'undefined') window.scrollTo({ top: 0, behavior: 'smooth' })
+  }
+
+  function cancelForm() {
+    setShowAdd(false)
+    setEditingId(null)
+    setForm(emptyForm)
+  }
+
+  async function saveProduct(e: React.FormEvent) {
     e.preventDefault()
     if (!form.name.trim()) return
     setSaving(true)
     const petCat = PET_CATEGORIES.find((c) => c.id === form.pet)
     const typeCat = PRODUCT_TYPES.find((t) => t.id === form.type)
+    const badgeOpt = BADGE_OPTIONS.find((b) => b.value === form.badge)
     const body = {
       name: form.name.trim(),
       category: form.category.trim() || `${petCat?.label ?? ''} · ${typeCat?.label ?? ''}`,
       price: Number(form.price) || 0,
+      oldPrice: form.oldPrice ? Number(form.oldPrice) : null,
       stock: Number(form.stock) || 0,
       pet: form.pet,
       type: form.type,
       icon: PET_ICON[form.pet] ?? 'PawPrint',
       desc: form.desc.trim(),
+      image: form.image.trim() || null,
+      badge: badgeOpt ? { label: badgeOpt.label, variant: badgeOpt.variant } : null,
     }
     await fetch('/api/admin/products', {
-      method: 'POST',
+      method: editingId ? 'PATCH' : 'POST',
       headers: headers({ 'Content-Type': 'application/json' }),
-      body: JSON.stringify(body),
+      body: JSON.stringify(editingId ? { id: editingId, ...body } : body),
     }).catch(() => {})
     await loadProducts(authPw)
-    setForm(emptyForm)
-    setShowAdd(false)
+    cancelForm()
     setSaving(false)
   }
 
@@ -504,7 +538,7 @@ export default function AdminPage() {
               <div className="flex items-center justify-between gap-3">
                 <p className="font-mono text-[13px] text-ink-500">{products.length} бараа</p>
                 <button
-                  onClick={() => setShowAdd((s) => !s)}
+                  onClick={() => (showAdd ? cancelForm() : setShowAdd(true))}
                   className="nx-press inline-flex items-center gap-1.5 h-10 px-4 font-bold text-[14px] border-[2.5px] border-ink-900 rounded-pill bg-cobalt-600 text-paper-0 shadow-hard-sm cursor-pointer"
                 >
                   {showAdd ? <X weight="bold" size={16} /> : <Plus weight="bold" size={16} />}
@@ -513,21 +547,41 @@ export default function AdminPage() {
               </div>
 
               {showAdd && (
-                <form onSubmit={addProduct} className="bg-paper-0 border-[2.5px] border-ink-900 rounded-lg shadow-hard p-5 grid sm:grid-cols-2 gap-3">
+                <form onSubmit={saveProduct} className="bg-paper-0 border-[2.5px] border-ink-900 rounded-lg shadow-hard p-5 grid sm:grid-cols-2 gap-3">
+                  <div className="sm:col-span-2 font-display font-extrabold text-[17px] text-ink-900">
+                    {editingId ? 'Бараа засах' : 'Шинэ бараа'}
+                  </div>
                   <input className={fieldCls} placeholder="Барааны нэр *" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} />
                   <input className={fieldCls} placeholder="Ангилал (жишээ: Муур · Хоол)" value={form.category} onChange={(e) => setForm({ ...form, category: e.target.value })} />
-                  <input className={fieldCls} type="number" placeholder="Үнэ (₮)" value={form.price} onChange={(e) => setForm({ ...form, price: e.target.value })} />
+                  <input className={fieldCls} type="number" placeholder="Үнэ (₮) *" value={form.price} onChange={(e) => setForm({ ...form, price: e.target.value })} />
+                  <input className={fieldCls} type="number" placeholder="Хямдралын өмнөх үнэ (заавал биш)" value={form.oldPrice} onChange={(e) => setForm({ ...form, oldPrice: e.target.value })} />
                   <input className={fieldCls} type="number" placeholder="Нөөц (ш)" value={form.stock} onChange={(e) => setForm({ ...form, stock: e.target.value })} />
+                  <select className={fieldCls} value={form.badge} onChange={(e) => setForm({ ...form, badge: e.target.value })}>
+                    <option value="">Таг байхгүй</option>
+                    {BADGE_OPTIONS.map((b) => <option key={b.value} value={b.value}>{b.label}</option>)}
+                  </select>
                   <select className={fieldCls} value={form.pet} onChange={(e) => setForm({ ...form, pet: e.target.value })}>
                     {PET_CATEGORIES.filter((c) => c.id !== 'all').map((c) => <option key={c.id} value={c.id}>{c.label}</option>)}
                   </select>
                   <select className={fieldCls} value={form.type} onChange={(e) => setForm({ ...form, type: e.target.value })}>
                     {PRODUCT_TYPES.filter((t) => t.id !== 'all').map((t) => <option key={t.id} value={t.id}>{t.label}</option>)}
                   </select>
+                  <div className="sm:col-span-2 flex gap-3 items-start">
+                    <input className={`${fieldCls} flex-1`} placeholder="Зургийн URL (https://…)" value={form.image} onChange={(e) => setForm({ ...form, image: e.target.value })} />
+                    {form.image && (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img src={form.image} alt="preview" className="w-[46px] h-[46px] rounded-md border-[2.5px] border-ink-900 object-cover bg-paper-100" />
+                    )}
+                  </div>
                   <textarea className={`${fieldCls} h-auto py-2.5 sm:col-span-2 resize-none`} rows={2} placeholder="Тайлбар" value={form.desc} onChange={(e) => setForm({ ...form, desc: e.target.value })} />
-                  <button type="submit" disabled={saving} className="nx-press sm:col-span-2 h-12 font-bold text-[15px] border-[2.5px] border-ink-900 rounded-pill bg-brand-green text-white shadow-hard cursor-pointer disabled:opacity-60">
-                    {saving ? 'Хадгалж байна…' : 'Бараа хадгалах'}
-                  </button>
+                  <div className="sm:col-span-2 flex gap-3">
+                    <button type="submit" disabled={saving} className="nx-press flex-1 h-12 font-bold text-[15px] border-[2.5px] border-ink-900 rounded-pill bg-brand-green text-white shadow-hard cursor-pointer disabled:opacity-60">
+                      {saving ? 'Хадгалж байна…' : editingId ? 'Өөрчлөлт хадгалах' : 'Бараа хадгалах'}
+                    </button>
+                    <button type="button" onClick={cancelForm} className="nx-press h-12 px-5 font-bold text-[15px] border-[2.5px] border-ink-900 rounded-pill bg-paper-0 text-ink-900 shadow-hard-sm cursor-pointer">
+                      Болих
+                    </button>
+                  </div>
                 </form>
               )}
 
@@ -572,9 +626,14 @@ export default function AdminPage() {
                               </span>
                             </td>
                             <td className="px-4 py-3">
-                              <button onClick={() => deleteProduct(p.id, p.name)} aria-label="Устгах" className="text-ink-500 hover:text-brand-red transition-colors p-1">
-                                <Trash weight="bold" size={18} />
-                              </button>
+                              <div className="flex items-center gap-1">
+                                <button onClick={() => startEdit(p)} aria-label="Засах" className="text-ink-500 hover:text-cobalt-600 transition-colors p-1">
+                                  <PencilSimple weight="bold" size={18} />
+                                </button>
+                                <button onClick={() => deleteProduct(p.id, p.name)} aria-label="Устгах" className="text-ink-500 hover:text-brand-red transition-colors p-1">
+                                  <Trash weight="bold" size={18} />
+                                </button>
+                              </div>
                             </td>
                           </tr>
                         )

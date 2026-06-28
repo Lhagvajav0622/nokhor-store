@@ -71,7 +71,12 @@ export default function ProductDetailPage() {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
         {/* Image */}
         <div className="grain relative aspect-square bg-paper-100 border-4 border-ink-900 rounded-xl shadow-hard-lg flex items-center justify-center overflow-hidden">
-          <ProductIcon name={product.icon} size={180} className="text-ink-300" />
+          {product.image ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={product.image} alt={product.name} className="absolute inset-0 w-full h-full object-cover" />
+          ) : (
+            <ProductIcon name={product.icon} size={180} className="text-ink-300" />
+          )}
           {product.badge && (
             <div className="absolute top-4 left-4">
               <span className={`font-mono text-[11px] font-bold uppercase tracking-[.06em] px-2 py-1 rounded-sm border-2 border-ink-900 shadow-hard-sm ${BADGE_STYLES[product.badge.variant]}`}>

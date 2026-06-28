@@ -46,6 +46,7 @@ export async function POST(req: Request) {
     stock,
     soldOut: stock === 0,
     badge: body.badge || null,
+    image: body.image ? String(body.image) : null,
     order: Date.now(),
     createdAt: FieldValue.serverTimestamp(),
   }

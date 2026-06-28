@@ -19,6 +19,7 @@ export type Product = {
   soldOut?: boolean
   desc: string
   stock: number
+  image?: string
 }
 
 export const PRODUCTS: Product[] = [
